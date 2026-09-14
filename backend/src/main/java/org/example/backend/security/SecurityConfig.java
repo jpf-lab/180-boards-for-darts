@@ -14,7 +14,7 @@ import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 public class SecurityConfig {
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http){
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(req -> req
@@ -26,8 +26,8 @@ public class SecurityConfig {
                         .authenticationEntryPoint(
                                 new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)
                         ))
-                .oauth2Login(o -> o.defaultSuccessUrl("http://localhost:5173/"))
-                .logout(logout -> logout.logoutSuccessUrl("http://localhost:5173/"));
+                .oauth2Login(o -> o.defaultSuccessUrl("http://localhost:8080/"))
+                .logout(logout -> logout.logoutSuccessUrl("http://localhost:8080/"));
 
         return http.build();
     }
