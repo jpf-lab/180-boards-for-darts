@@ -4,6 +4,6 @@ export type userType = {
 }
 
 export type user = {
-    user?: userType | undefined;
+    user?: userType;
     setUser: (user: userType | undefined) => void;
 }

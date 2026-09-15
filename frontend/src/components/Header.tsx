@@ -4,7 +4,7 @@ import type {user} from "../types/types.ts";
 
 type HeaderProps = user
 
-export default function Header(props: HeaderProps) {
+export default function Header(props: Readonly<HeaderProps>) {
 
     return (
         <header>

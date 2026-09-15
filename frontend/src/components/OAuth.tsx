@@ -2,18 +2,16 @@ import axios from "axios";
 import {useEffect} from "react";
 import type {user, userType} from "../types/types.ts";
 
-type OAuthProps = user & {
+type OAuthProps = user
 
+function getOpen(){
+    return window.location.host === 'localhost:5173' ?
+        'http://localhost:8080'
+        :
+        window.location.origin
 }
+export default function OAuth(props: Readonly<OAuthProps>) {
 
-export default function OAuth(props: OAuthProps) {
-
-    function getOpen(){
-        return window.location.host === 'localhost:5173' ?
-            'http://localhost:8080'
-            :
-            window.location.origin
-    }
 
     function login() {
         window.open(getOpen() + '/oauth2/authorization/github', '_self')
