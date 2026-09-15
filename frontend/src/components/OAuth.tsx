@@ -10,16 +10,16 @@ function getOpen(){
         :
         window.location.origin
 }
+
+function login() {
+    window.open(getOpen() + '/oauth2/authorization/github', '_self')
+}
+
+function logout() {
+    window.open(getOpen() + '/logout', '_self')
+}
+
 export default function OAuth(props: Readonly<OAuthProps>) {
-
-
-    function login() {
-        window.open(getOpen() + '/oauth2/authorization/github', '_self')
-    }
-
-    function logout() {
-        window.open(getOpen() + '/logout', '_self')
-    }
 
     function loadUser() {
         axios.get<userType>("api/auth/me")
