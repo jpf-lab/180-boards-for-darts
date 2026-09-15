@@ -39,7 +39,7 @@ export default function OAuth(props: OAuthProps) {
 
     useEffect(() => {
         loadUser()
-    }, [loadUser]);
+    });
 
     return (
         <>
