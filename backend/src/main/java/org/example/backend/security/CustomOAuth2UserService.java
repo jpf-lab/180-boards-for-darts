@@ -26,7 +26,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         AppUser user = appUserRepo.findById(oAuth2User.getName())
                 .orElseGet(() -> createUser(oAuth2User));
 
-        return new DefaultOAuth2User(List.of(new SimpleGrantedAuthority(user.role())),
+        return new DefaultOAuth2User(List.of(new SimpleGrantedAuthority(user.role().toString())),
                 oAuth2User.getAttributes(), "id");
     }
 
@@ -34,7 +34,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         AppUser temp = AppUser.builder()
                 .id(newUser.getName())
                 .username(newUser.getAttribute("login"))
-                .role("USER")
+                .role(UserRole.USER)
                 .build();
 
         appUserRepo.save(temp);

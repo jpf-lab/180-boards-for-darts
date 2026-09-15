@@ -1,6 +1,7 @@
 package org.example.backend.security;
 
 import lombok.Builder;
+import lombok.With;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document("AppUsers")
@@ -8,6 +9,6 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public record AppUser(
         String id,
         String username,
-        String role
+        UserRole role
 ) {
 }

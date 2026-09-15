@@ -75,7 +75,7 @@ class CustomOAuth2UserServiceTest {
 
     @Test
     void loadUser_existingUser_returnsUserWithStoredRole() {
-        AppUser existingUser = new AppUser("12345", "user", "ADMIN");
+        AppUser existingUser = new AppUser("12345", "user", UserRole.ADMIN);
         when(appUserRepo.findById("12345")).thenReturn(Optional.of(existingUser));
 
         OAuth2User result = service.loadUser(userRequest);
