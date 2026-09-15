@@ -1,9 +1,12 @@
 import axios from "axios";
-import {useEffect, useState} from "react";
+import {useEffect} from "react";
+import type {user} from "../types/types.ts";
 
-export default function OAuth() {
+type OAuthProps = user & {
 
-    const [username, setUsername] = useState<string | null | undefined>(undefined)
+}
+
+export default function OAuth(props: OAuthProps) {
 
     function getOpen(){
         return window.location.host === 'localhost:5173' ?
@@ -22,9 +25,13 @@ export default function OAuth() {
 
     function loadUser() {
         axios.get("api/auth/me")
-            .then(r => setUsername(r.data))
+            .then(r =>
+                props.setUser({
+                    name: r.data
+                })
+            )
             .catch(e => {
-                setUsername(null)
+                props.setUser(undefined)
                 console.error(e)
             })
     }
@@ -35,15 +42,15 @@ export default function OAuth() {
 
     return (
         <>
-            {username &&
+            {props.user?.name &&
                 <>
-                    <h2>Hallo {username}</h2>
+                    <span>Hallo {props.user.name}</span>
                     <button onClick={logout}>Logout!</button>
                 </>
             }
-                {!username &&
-                    <button onClick={login}>Login</button>
-                }
+            {!props.user?.name &&
+                <button onClick={login}>Login</button>
+            }
         </>
     )
 }
