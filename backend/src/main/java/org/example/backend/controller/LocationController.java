@@ -1,0 +1,53 @@
+package org.example.backend.controller;
+
+import org.bson.types.ObjectId;
+import org.example.backend.model.Location;
+import org.example.backend.repository.LocationRepo;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.NoSuchElementException;
+
+@RestController
+@RequestMapping("/api/locations")
+public class LocationController {
+
+    private final LocationRepo locationRepo;
+
+    public LocationController(LocationRepo locationRepo) {
+        this.locationRepo = locationRepo;
+    }
+
+    @GetMapping
+    public List<Location> getAll() {
+        return locationRepo.findAll();
+    }
+
+    @GetMapping("/{id}")
+    public Location getById(@PathVariable String id) {
+        return locationRepo.findById(new ObjectId(id))
+                .orElseThrow(() -> new NoSuchElementException("Location not found"));
+    }
+
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public Location create(@RequestBody Location location) {
+        return locationRepo.save(location);
+    }
+
+    @PutMapping("/{id}")
+    public Location update(@PathVariable String id, @RequestBody Location location) {
+        ObjectId objectId = new ObjectId(id);
+        if (!locationRepo.existsById(objectId)) {
+            throw new NoSuchElementException("Location not found");
+        }
+        return locationRepo.save(location.withId(objectId));
+    }
+
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void delete(@PathVariable String id) {
+        locationRepo.deleteById(new ObjectId(id));
+    }
+}
