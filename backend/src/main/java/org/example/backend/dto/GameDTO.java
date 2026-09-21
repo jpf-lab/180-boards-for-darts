@@ -4,8 +4,6 @@ import lombok.Builder;
 import lombok.With;
 import org.example.backend.model.GameRound;
 import org.example.backend.model.Pairing;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.List;
 
