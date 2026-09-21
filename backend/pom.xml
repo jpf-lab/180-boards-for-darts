@@ -72,6 +72,17 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-security-oauth2-client</artifactId>
         </dependency>
+        <dependency>
+            <groupId>de.flapdoodle.embed</groupId>
+            <artifactId>de.flapdoodle.embed.mongo.spring4x</artifactId>
+            <version>4.33.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>de.neuefische.java</groupId>
+            <artifactId>spring-boot-starter-fallback-page</artifactId>
+            <version>1.0.0</version>
+        </dependency>
     </dependencies>
 
     <build>
