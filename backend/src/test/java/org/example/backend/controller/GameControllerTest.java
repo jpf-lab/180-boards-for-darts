@@ -51,7 +51,7 @@ class GameControllerTest {
 
         String expectedJson = """
                 [
-                    { 
+                    {
                       "id": "507f1f77bcf86cd799439011",
                       "tournamentId": null,
                       "playfieldId": null,
@@ -79,7 +79,7 @@ class GameControllerTest {
         when(gameRepo.findById(GAME_ID)).thenReturn(Optional.of(game));
 
         String expectedJson = """
-                { 
+                {
                   "id": "507f1f77bcf86cd799439011",
                   "round": 1,
                   "position": 0,
@@ -196,7 +196,7 @@ class GameControllerTest {
 
         String expectedJson = """
                 [
-                  { 
+                  {
                     "id": "507f1f77bcf86cd799439011",
                     "pairings": [
                       {
@@ -232,7 +232,7 @@ class GameControllerTest {
                 }
                 """;
         String expectedJson = """
-                { 
+                {
                   "id": "507f1f77bcf86cd799439011",
                   "round": 1,
                   "position": 0,
