@@ -2,20 +2,19 @@ package org.example.backend.model;
 
 import lombok.Builder;
 import lombok.With;
-import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.List;
 
-@With
-@Builder
 @Document("game")
+@Builder
+@With
 public record Game(
         @Id
-        ObjectId id,
-        ObjectId tournamentId,
-        ObjectId playfieldId,
+        String id,
+        String tournamentId,
+        String playfieldId,
         int round,
         int position,
         int group,

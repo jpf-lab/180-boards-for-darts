@@ -1,6 +1,5 @@
 package org.example.backend.controller;
 
-import org.bson.types.ObjectId;
 import org.example.backend.model.Tournament;
 import org.example.backend.repository.TournamentRepo;
 import org.junit.jupiter.api.Test;
@@ -33,14 +32,13 @@ class TournamentControllerTest {
     @MockitoBean
     private TournamentRepo tournamentRepo;
 
-    private static final ObjectId TOURNAMENT_ID = new ObjectId("507f1f77bcf86cd799439011");
-    private static final ObjectId LOCATION_ID = new ObjectId("507f1f77bcf86cd799439012");
-    private static final ObjectId PARTICIPANT_ID = new ObjectId("507f1f77bcf86cd799439013");
-    private static final ObjectId PLAYFIELD_ID = new ObjectId("507f1f77bcf86cd799439014");
+    private static final String TOURNAMENT_ID = "507f1f77bcf86cd799439011";
+    private static final String LOCATION_ID = "507f1f77bcf86cd799439012";
+    private static final String PARTICIPANT_ID = "507f1f77bcf86cd799439013";
+    private static final String PLAYFIELD_ID = "507f1f77bcf86cd799439014";
 
     @Test
     void getAll_returnsAllTournaments() throws Exception {
-        // Given
         Tournament tournament = Tournament.builder().id(TOURNAMENT_ID).name("turnier 1").build();
         when(tournamentRepo.findAll()).thenReturn(List.of(tournament));
 
@@ -48,7 +46,6 @@ class TournamentControllerTest {
                 [ { "id": "507f1f77bcf86cd799439011", "name": "turnier 1" } ]
                 """;
 
-        // When & Then
         mockMvc.perform(get("/api/tournaments").with(oidcLogin()))
                 .andExpect(status().isOk())
                 .andExpect(content().json(expectedJson));
@@ -56,7 +53,6 @@ class TournamentControllerTest {
 
     @Test
     void getById_returnsTournament_whenExists() throws Exception {
-        // Given
         Tournament tournament = Tournament.builder().id(TOURNAMENT_ID).name("turnier 1").build();
         when(tournamentRepo.findById(TOURNAMENT_ID)).thenReturn(Optional.of(tournament));
 
@@ -64,28 +60,24 @@ class TournamentControllerTest {
                 { "id": "507f1f77bcf86cd799439011", "name": "turnier 1" }
                 """;
 
-        // When & Then
-        mockMvc.perform(get("/api/tournaments/{id}", TOURNAMENT_ID.toHexString()).with(oidcLogin()))
+        mockMvc.perform(get("/api/tournaments/{id}", TOURNAMENT_ID).with(oidcLogin()))
                 .andExpect(status().isOk())
                 .andExpect(content().json(expectedJson));
     }
 
     @Test
     void getById_throwsException_whenNotFound() {
-        // Given
-        ObjectId id = new ObjectId();
+        String id = "000000000000000000000000";
         when(tournamentRepo.findById(id)).thenReturn(Optional.empty());
 
-        // When & Then
         Exception exception = assertThrows(Exception.class, () ->
-                mockMvc.perform(get("/api/tournaments/{id}", id.toHexString()).with(oidcLogin())));
+                mockMvc.perform(get("/api/tournaments/{id}", id).with(oidcLogin())));
 
         assertInstanceOf(NoSuchElementException.class, exception.getCause());
     }
 
     @Test
     void getByLocationId_returnsMatchingTournaments() throws Exception {
-        // Given
         Tournament tournament = Tournament.builder().id(TOURNAMENT_ID).name("turnier 1").locationId(LOCATION_ID).build();
         when(tournamentRepo.findByLocationId(LOCATION_ID)).thenReturn(List.of(tournament));
 
@@ -93,15 +85,13 @@ class TournamentControllerTest {
                 [ { "id": "507f1f77bcf86cd799439011", "name": "turnier 1", "locationId": "507f1f77bcf86cd799439012" } ]
                 """;
 
-        // When & Then
-        mockMvc.perform(get("/api/tournaments").param("locationId", LOCATION_ID.toHexString()).with(oidcLogin()))
+        mockMvc.perform(get("/api/tournaments").param("locationId", LOCATION_ID).with(oidcLogin()))
                 .andExpect(status().isOk())
                 .andExpect(content().json(expectedJson));
     }
 
     @Test
     void getByParticipantId_returnsMatchingTournaments() throws Exception {
-        // Given
         Tournament tournament = Tournament.builder().id(TOURNAMENT_ID).name("turnier 1")
                 .participantIds(List.of(PARTICIPANT_ID)).build();
         when(tournamentRepo.findByParticipantIdsContaining(PARTICIPANT_ID)).thenReturn(List.of(tournament));
@@ -110,15 +100,13 @@ class TournamentControllerTest {
                 [ { "id": "507f1f77bcf86cd799439011", "name": "turnier 1", "participantIds": ["507f1f77bcf86cd799439013"] } ]
                 """;
 
-        // When & Then
-        mockMvc.perform(get("/api/tournaments").param("participantId", PARTICIPANT_ID.toHexString()).with(oidcLogin()))
+        mockMvc.perform(get("/api/tournaments").param("participantId", PARTICIPANT_ID).with(oidcLogin()))
                 .andExpect(status().isOk())
                 .andExpect(content().json(expectedJson));
     }
 
     @Test
     void getByPlayfieldId_returnsMatchingTournaments() throws Exception {
-        // Given
         Tournament tournament = Tournament.builder().id(TOURNAMENT_ID).name("turnier 1")
                 .playfieldIds(List.of(PLAYFIELD_ID)).build();
         when(tournamentRepo.findByPlayfieldIdsContaining(PLAYFIELD_ID)).thenReturn(List.of(tournament));
@@ -127,15 +115,13 @@ class TournamentControllerTest {
                 [ { "id": "507f1f77bcf86cd799439011", "name": "turnier 1", "playfieldIds": ["507f1f77bcf86cd799439014"] } ]
                 """;
 
-        // When & Then
-        mockMvc.perform(get("/api/tournaments").param("playfieldId", PLAYFIELD_ID.toHexString()).with(oidcLogin()))
+        mockMvc.perform(get("/api/tournaments").param("playfieldId", PLAYFIELD_ID).with(oidcLogin()))
                 .andExpect(status().isOk())
                 .andExpect(content().json(expectedJson));
     }
 
     @Test
     void create_returnsCreatedTournament() throws Exception {
-        // Given
         Tournament saved = Tournament.builder().id(TOURNAMENT_ID).name("turnier 1").build();
         when(tournamentRepo.save(any(Tournament.class))).thenReturn(saved);
 
@@ -146,7 +132,6 @@ class TournamentControllerTest {
                 { "id": "507f1f77bcf86cd799439011", "name": "turnier 1" }
                 """;
 
-        // When & Then
         mockMvc.perform(post("/api/tournaments").with(oidcLogin())
                         .contentType("application/json")
                         .content(requestBody))
@@ -156,7 +141,6 @@ class TournamentControllerTest {
 
     @Test
     void update_returnsUpdatedTournament_whenExists() throws Exception {
-        // Given
         Tournament updated = Tournament.builder().id(TOURNAMENT_ID).name("neuer name").build();
 
         when(tournamentRepo.existsById(TOURNAMENT_ID)).thenReturn(true);
@@ -169,8 +153,7 @@ class TournamentControllerTest {
                 { "id": "507f1f77bcf86cd799439011", "name": "neuer name" }
                 """;
 
-        // When & Then
-        mockMvc.perform(put("/api/tournaments/{id}", TOURNAMENT_ID.toHexString()).with(oidcLogin())
+        mockMvc.perform(put("/api/tournaments/{id}", TOURNAMENT_ID).with(oidcLogin())
                         .contentType("application/json")
                         .content(requestBody))
                 .andExpect(status().isOk())
@@ -181,17 +164,15 @@ class TournamentControllerTest {
 
     @Test
     void update_throwsException_whenNotFound() {
-        // Given
-        ObjectId id = new ObjectId();
+        String id = "000000000000000000000000";
         when(tournamentRepo.existsById(id)).thenReturn(false);
 
         String requestBody = """
                 { "name": "neuer name" }
                 """;
 
-        // When & Then
         Exception exception = assertThrows(Exception.class, () ->
-                mockMvc.perform(put("/api/tournaments/{id}", id.toHexString()).with(oidcLogin())
+                mockMvc.perform(put("/api/tournaments/{id}", id).with(oidcLogin())
                         .contentType("application/json")
                         .content(requestBody)));
 
@@ -201,8 +182,7 @@ class TournamentControllerTest {
 
     @Test
     void delete_removesTournament() throws Exception {
-        // When & Then
-        mockMvc.perform(delete("/api/tournaments/{id}", TOURNAMENT_ID.toHexString()).with(oidcLogin()))
+        mockMvc.perform(delete("/api/tournaments/{id}", TOURNAMENT_ID).with(oidcLogin()))
                 .andExpect(status().isNoContent());
 
         verify(tournamentRepo).deleteById(TOURNAMENT_ID);

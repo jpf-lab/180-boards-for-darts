@@ -1,6 +1,5 @@
 package org.example.backend.controller;
 
-import org.bson.types.ObjectId;
 import org.example.backend.model.Playfield;
 import org.example.backend.repository.PlayfieldRepo;
 import org.springframework.http.HttpStatus;
@@ -26,7 +25,7 @@ public class PlayfieldController {
 
     @GetMapping("/{id}")
     public Playfield getById(@PathVariable String id) {
-        return playfieldRepo.findById(new ObjectId(id))
+        return playfieldRepo.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("Playfield not found"));
     }
 
@@ -38,16 +37,15 @@ public class PlayfieldController {
 
     @PutMapping("/{id}")
     public Playfield update(@PathVariable String id, @RequestBody Playfield playfield) {
-        ObjectId objectId = new ObjectId(id);
-        if (!playfieldRepo.existsById(objectId)) {
+        if (!playfieldRepo.existsById(id)) {
             throw new NoSuchElementException("Playfield not found");
         }
-        return playfieldRepo.save(playfield.withId(objectId));
+        return playfieldRepo.save(playfield.withId(id));
     }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable String id) {
-        playfieldRepo.deleteById(new ObjectId(id));
+        playfieldRepo.deleteById(id);
     }
 }

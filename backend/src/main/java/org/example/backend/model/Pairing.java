@@ -2,13 +2,12 @@ package org.example.backend.model;
 
 import lombok.Builder;
 import lombok.With;
-import org.bson.types.ObjectId;
 
-@With
 @Builder
+@With
 public record Pairing(
-        ObjectId participantId,
-        int team,
-        int teamOrder
+        String participantId,
+        Integer team,
+        Integer teamOrder
 ) {
 }

@@ -1,6 +1,5 @@
 package org.example.backend.controller;
 
-import org.bson.types.ObjectId;
 import org.example.backend.model.Game;
 import org.example.backend.model.Pairing;
 import org.example.backend.repository.GameRepo;
@@ -35,25 +34,36 @@ class GameControllerTest {
     @MockitoBean
     private GameRepo gameRepo;
 
-    private static final ObjectId GAME_ID = new ObjectId("507f1f77bcf86cd799439011");
-    private static final ObjectId TOURNAMENT_ID = new ObjectId("507f1f77bcf86cd799439012");
-    private static final ObjectId PLAYFIELD_ID = new ObjectId("507f1f77bcf86cd799439013");
-    private static final ObjectId PARTICIPANT_ID = new ObjectId("507f1f77bcf86cd799439014");
+    private static final String GAME_ID = "507f1f77bcf86cd799439011";
+    private static final String TOURNAMENT_ID = "507f1f77bcf86cd799439012";
+    private static final String PLAYFIELD_ID = "507f1f77bcf86cd799439013";
+    private static final String PARTICIPANT_ID = "507f1f77bcf86cd799439014";
 
     @Test
     void getAll_returnsAllGames() throws Exception {
-        // Given
-        Game game = Game.builder().id(GAME_ID).round(1).position(0).build();
+        Game game = Game.builder()
+                .id(GAME_ID)
+                .round(1)
+                .position(0)
+                .group(0)
+                .build();
         when(gameRepo.findAll()).thenReturn(List.of(game));
 
         String expectedJson = """
                 [
-                    { "id": "507f1f77bcf86cd799439011", "tournamentId": null, "playfieldId": null,
-                      "round": 1, "position": 0, "group": 0, "pairings": null, "rounds": null }
+                    { 
+                      "id": "507f1f77bcf86cd799439011",
+                      "tournamentId": null,
+                      "playfieldId": null,
+                      "round": 1,
+                      "position": 0,
+                      "group": 0,
+                      "pairings": null,
+                      "rounds": null
+                    }
                 ]
                 """;
 
-        // When & Then
         mockMvc.perform(get("/api/games").with(oidcLogin()))
                 .andExpect(status().isOk())
                 .andExpect(content().json(expectedJson));
@@ -61,47 +71,58 @@ class GameControllerTest {
 
     @Test
     void getById_returnsGame_whenExists() throws Exception {
-        // Given
-        Game game = Game.builder().id(GAME_ID).round(1).position(0).build();
+        Game game = Game.builder()
+                .id(GAME_ID)
+                .round(1)
+                .position(0)
+                .build();
         when(gameRepo.findById(GAME_ID)).thenReturn(Optional.of(game));
 
         String expectedJson = """
-                { "id": "507f1f77bcf86cd799439011", "round": 1, "position": 0, "group": 0 }
+                { 
+                  "id": "507f1f77bcf86cd799439011",
+                  "round": 1,
+                  "position": 0,
+                  "group": 0
+                }
                 """;
 
-        // When & Then
-        mockMvc.perform(get("/api/games/{id}", GAME_ID.toHexString()).with(oidcLogin()))
+        mockMvc.perform(get("/api/games/{id}", GAME_ID).with(oidcLogin()))
                 .andExpect(status().isOk())
                 .andExpect(content().json(expectedJson));
     }
 
     @Test
     void getById_throwsException_whenNotFound() {
-        // Given
-        ObjectId id = new ObjectId();
+        String id = "000000000000000000000000";
         when(gameRepo.findById(id)).thenReturn(Optional.empty());
 
-        // When & Then
         Exception exception = assertThrows(Exception.class, () ->
-                mockMvc.perform(get("/api/games/{id}", id.toHexString()).with(oidcLogin())));
+                mockMvc.perform(get("/api/games/{id}", id).with(oidcLogin())));
 
         assertInstanceOf(NoSuchElementException.class, exception.getCause());
     }
 
     @Test
     void getByTournamentId_withoutRound_returnsAllGamesOfTournament() throws Exception {
-        // Given
-        Game game = Game.builder().id(GAME_ID).tournamentId(TOURNAMENT_ID).round(1).build();
+        Game game = Game.builder()
+                .id(GAME_ID)
+                .tournamentId(TOURNAMENT_ID)
+                .round(1)
+                .build();
         when(gameRepo.findByTournamentId(TOURNAMENT_ID)).thenReturn(List.of(game));
 
         String expectedJson = """
                 [
-                    { "id": "507f1f77bcf86cd799439011", "tournamentId": "507f1f77bcf86cd799439012", "round": 1 }
+                  {
+                    "id": "507f1f77bcf86cd799439011",
+                    "tournamentId": "507f1f77bcf86cd799439012",
+                    "round": 1
+                  }
                 ]
                 """;
 
-        // When & Then
-        mockMvc.perform(get("/api/games").param("tournamentId", TOURNAMENT_ID.toHexString()).with(oidcLogin()))
+        mockMvc.perform(get("/api/games").param("tournamentId", TOURNAMENT_ID).with(oidcLogin()))
                 .andExpect(status().isOk())
                 .andExpect(content().json(expectedJson));
 
@@ -111,19 +132,25 @@ class GameControllerTest {
 
     @Test
     void getByTournamentId_withRound_filtersOnRoundToo() throws Exception {
-        // Given
-        Game game = Game.builder().id(GAME_ID).tournamentId(TOURNAMENT_ID).round(2).build();
+        Game game = Game.builder()
+                .id(GAME_ID)
+                .tournamentId(TOURNAMENT_ID)
+                .round(2)
+                .build();
         when(gameRepo.findByTournamentIdAndRound(TOURNAMENT_ID, 2)).thenReturn(List.of(game));
 
         String expectedJson = """
                 [
-                    { "id": "507f1f77bcf86cd799439011", "tournamentId": "507f1f77bcf86cd799439012", "round": 2 }
+                  {
+                    "id": "507f1f77bcf86cd799439011",
+                    "tournamentId": "507f1f77bcf86cd799439012",
+                    "round": 2
+                  }
                 ]
                 """;
 
-        // When & Then
         mockMvc.perform(get("/api/games")
-                        .param("tournamentId", TOURNAMENT_ID.toHexString())
+                        .param("tournamentId", TOURNAMENT_ID)
                         .param("round", "2")
                         .with(oidcLogin()))
                 .andExpect(status().isOk())
@@ -132,56 +159,87 @@ class GameControllerTest {
 
     @Test
     void getByPlayfieldId_returnsMatchingGames() throws Exception {
-        // Given
-        Game game = Game.builder().id(GAME_ID).playfieldId(PLAYFIELD_ID).build();
+        Game game = Game.builder()
+                .id(GAME_ID)
+                .playfieldId(PLAYFIELD_ID)
+                .build();
         when(gameRepo.findByPlayfieldId(PLAYFIELD_ID)).thenReturn(List.of(game));
 
         String expectedJson = """
                 [
-                    { "id": "507f1f77bcf86cd799439011", "playfieldId": "507f1f77bcf86cd799439013" }
+                  {
+                    "id": "507f1f77bcf86cd799439011",
+                    "playfieldId": "507f1f77bcf86cd799439013"
+                  }
                 ]
                 """;
 
-        // When & Then
-        mockMvc.perform(get("/api/games").param("playfieldId", PLAYFIELD_ID.toHexString()).with(oidcLogin()))
+        mockMvc.perform(get("/api/games").param("playfieldId", PLAYFIELD_ID).with(oidcLogin()))
                 .andExpect(status().isOk())
                 .andExpect(content().json(expectedJson));
     }
 
     @Test
     void getByParticipantId_returnsMatchingGames() throws Exception {
-        // Given
-        Pairing pairing = Pairing.builder().participantId(PARTICIPANT_ID).team(0).teamOrder(0).build();
-        Game game = Game.builder().id(GAME_ID).pairings(List.of(pairing)).build();
+        Pairing pairing = Pairing.builder()
+                .participantId(PARTICIPANT_ID)
+                .team(0)
+                .teamOrder(0)
+                .build();
+        Game game = Game.builder()
+                .id(GAME_ID)
+                .pairings(
+                        List.of(pairing)
+                )
+                .build();
         when(gameRepo.findByParticipantId(PARTICIPANT_ID)).thenReturn(List.of(game));
 
         String expectedJson = """
                 [
-                    { "id": "507f1f77bcf86cd799439011",
-                      "pairings": [ { "participantId": "507f1f77bcf86cd799439014", "team": 0, "teamOrder": 0 } ] }
+                  { 
+                    "id": "507f1f77bcf86cd799439011",
+                    "pairings": [
+                      {
+                        "participantId": "507f1f77bcf86cd799439014",
+                        "team": 0,
+                        "teamOrder": 0
+                      }
+                    ]
+                  }
                 ]
                 """;
 
-        // When & Then
-        mockMvc.perform(get("/api/games").param("participantId", PARTICIPANT_ID.toHexString()).with(oidcLogin()))
+        mockMvc.perform(get("/api/games").param("participantId", PARTICIPANT_ID).with(oidcLogin()))
                 .andExpect(status().isOk())
                 .andExpect(content().json(expectedJson));
     }
 
     @Test
     void create_returnsCreatedGame() throws Exception {
-        // Given
-        Game saved = Game.builder().id(GAME_ID).round(1).position(0).build();
+        Game saved = Game.builder()
+                .id(GAME_ID)
+                .round(1)
+                .position(0)
+                .group(0)
+                .build();
         when(gameRepo.save(any(Game.class))).thenReturn(saved);
 
         String requestBody = """
-                { "round": 1, "position": 0 }
+                {
+                    "round": 1,
+                    "position": 0,
+                    "group": 0
+                }
                 """;
         String expectedJson = """
-                { "id": "507f1f77bcf86cd799439011", "round": 1, "position": 0, "group": 0 }
+                { 
+                  "id": "507f1f77bcf86cd799439011",
+                  "round": 1,
+                  "position": 0,
+                  "group": 0
+                }
                 """;
 
-        // When & Then
         mockMvc.perform(post("/api/games").with(oidcLogin())
                         .contentType("application/json")
                         .content(requestBody))
@@ -191,7 +249,6 @@ class GameControllerTest {
 
     @Test
     void update_returnsUpdatedGame_whenExists() throws Exception {
-        // Given
         Game updated = Game.builder()
                 .id(GAME_ID)
                 .tournamentId(TOURNAMENT_ID)
@@ -228,8 +285,7 @@ class GameControllerTest {
                 }
                 """;
 
-        // When & Then
-        mockMvc.perform(put("/api/games/{id}", GAME_ID.toHexString()).with(oidcLogin())
+        mockMvc.perform(put("/api/games/{id}", GAME_ID).with(oidcLogin())
                         .contentType("application/json")
                         .content(requestBody))
                 .andExpect(status().isOk())
@@ -240,17 +296,19 @@ class GameControllerTest {
 
     @Test
     void update_throwsException_whenNotFound() {
-        // Given
-        ObjectId id = new ObjectId();
+        String id = "000000000000000000000000";
         when(gameRepo.existsById(id)).thenReturn(false);
 
         String requestBody = """
-                { "round": 1, "position": 0 }
+                {
+                    "round": 1,
+                    "position": 0,
+                    "group": 0
+                }
                 """;
 
-        // When & Then
         Exception exception = assertThrows(Exception.class, () ->
-                mockMvc.perform(put("/api/games/{id}", id.toHexString()).with(oidcLogin())
+                mockMvc.perform(put("/api/games/{id}", id).with(oidcLogin())
                         .contentType("application/json")
                         .content(requestBody)));
 
@@ -260,8 +318,7 @@ class GameControllerTest {
 
     @Test
     void delete_removesGame() throws Exception {
-        // When & Then
-        mockMvc.perform(delete("/api/games/{id}", GAME_ID.toHexString()).with(oidcLogin()))
+        mockMvc.perform(delete("/api/games/{id}", GAME_ID).with(oidcLogin()))
                 .andExpect(status().isNoContent());
 
         verify(gameRepo).deleteById(GAME_ID);

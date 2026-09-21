@@ -1,6 +1,5 @@
 package org.example.backend.controller;
 
-import org.bson.types.ObjectId;
 import org.example.backend.model.Location;
 import org.example.backend.repository.LocationRepo;
 import org.junit.jupiter.api.Test;
@@ -33,21 +32,20 @@ class LocationControllerTest {
     @MockitoBean
     private LocationRepo locationRepo;
 
-    private static final ObjectId LOCATION_ID = new ObjectId("507f1f77bcf86cd799439011");
+    private static final String LOCATION_ID = "507f1f77bcf86cd799439011";
 
     @Test
     void getAll_returnsAllLocations() throws Exception {
-        // Given
         Location location = Location.builder()
                 .id(LOCATION_ID)
-                .name("Turnier 1")
-                .street("Nideggenerstraße")
+                .name("Testort")
+                .street("Teststraße")
                 .number("1")
-                .city("Zülpich")
-                .postalcode("53909")
-                .owner("J-P")
-                .contactPhone(225281881)
-                .contactMail("a@b.de")
+                .city("Teststadt")
+                .postalcode("12345")
+                .owner("Testbesitzer")
+                .contactPhone(null)
+                .contactMail(null)
                 .build();
 
         when(locationRepo.findAll()).thenReturn(List.of(location));
@@ -56,19 +54,18 @@ class LocationControllerTest {
                 [
                     {
                         "id": "507f1f77bcf86cd799439011",
-                        "name": "Turnier 1",
-                        "street": "Nideggenerstraße",
+                        "name": "Testort",
+                        "street": "Teststraße",
                         "number": "1",
-                        "city": "Zülpich",
-                        "postalcode": "53909",
-                        "owner": "J-P",
-                        "contactPhone": 225281881,
-                        "contactMail": "a@b.de"
+                        "city": "Teststadt",
+                        "postalcode": "12345",
+                        "owner": "Testbesitzer",
+                        "contactPhone": null,
+                        "contactMail": null
                     }
                 ]
                 """;
 
-        // When & Then
         mockMvc.perform(get("/api/locations").with(oidcLogin()))
                 .andExpect(status().isOk())
                 .andExpect(content().json(expectedJson));
@@ -76,50 +73,41 @@ class LocationControllerTest {
 
     @Test
     void getById_returnsLocation_whenExists() throws Exception {
-        // Given
-        Location location = Location.builder().id(LOCATION_ID).name("Turnier 1").city("Zülpich").build();
+        Location location = Location.builder().id(LOCATION_ID).name("Testort").city("Teststadt").build();
         when(locationRepo.findById(LOCATION_ID)).thenReturn(Optional.of(location));
 
         String expectedJson = """
-                { "id": "507f1f77bcf86cd799439011", "name": "Turnier 1", "city": "Zülpich" }
+                { "id": "507f1f77bcf86cd799439011", "name": "Testort", "city": "Teststadt" }
                 """;
 
-        // When & Then
-        mockMvc.perform(get("/api/locations/{id}", LOCATION_ID.toHexString()).with(oidcLogin()))
+        mockMvc.perform(get("/api/locations/{id}", LOCATION_ID).with(oidcLogin()))
                 .andExpect(status().isOk())
                 .andExpect(content().json(expectedJson));
     }
 
     @Test
     void getById_throwsException_whenNotFound() {
-        // Given
-        ObjectId id = new ObjectId();
+        String id = "000000000000000000000000";
         when(locationRepo.findById(id)).thenReturn(Optional.empty());
 
-        // When & Then
         Exception exception = assertThrows(Exception.class, () ->
-                mockMvc.perform(get("/api/locations/{id}", id.toHexString()).with(oidcLogin())));
+                mockMvc.perform(get("/api/locations/{id}", id).with(oidcLogin())));
 
         assertInstanceOf(NoSuchElementException.class, exception.getCause());
     }
 
     @Test
     void create_returnsCreatedLocation() throws Exception {
-        // Given
-        Location saved = Location.builder().id(LOCATION_ID).name("Turnier 1").city("Zülpich").build();
+        Location saved = Location.builder().id(LOCATION_ID).name("Testort").city("Teststadt").build();
         when(locationRepo.save(any(Location.class))).thenReturn(saved);
 
         String requestBody = """
-                {
-                    "name": "Turnier 1",
-                    "city": "Zülpich"
-                }
+                { "name": "Testort", "city": "Teststadt" }
                 """;
         String expectedJson = """
-                { "id": "507f1f77bcf86cd799439011", "name": "Turnier 1", "city": "Zülpich" }
+                { "id": "507f1f77bcf86cd799439011", "name": "Testort", "city": "Teststadt" }
                 """;
 
-        // When & Then
         mockMvc.perform(post("/api/locations").with(oidcLogin())
                         .contentType("application/json")
                         .content(requestBody))
@@ -129,45 +117,38 @@ class LocationControllerTest {
 
     @Test
     void update_returnsUpdatedLocation_whenExists() throws Exception {
-        // Given
-        Location updated = Location.builder().id(LOCATION_ID).name("Neuer Name").city("Zülpich").build();
+        Location updated = Location.builder().id(LOCATION_ID).name("Neuer Testort").city("Teststadt").build();
 
         when(locationRepo.existsById(LOCATION_ID)).thenReturn(true);
         when(locationRepo.save(any(Location.class))).thenReturn(updated);
 
         String requestBody = """
-                {
-                    "name": "Neuer Name",
-                    "city": "Zülpich"
-                }
+                { "name": "Neuer Testort", "city": "Teststadt" }
                 """;
         String expectedJson = """
-                { "id": "507f1f77bcf86cd799439011", "name": "Neuer Name", "city": "Zülpich" }
+                { "id": "507f1f77bcf86cd799439011", "name": "Neuer Testort", "city": "Teststadt" }
                 """;
 
-        // When & Then
-        mockMvc.perform(put("/api/locations/{id}", LOCATION_ID.toHexString()).with(oidcLogin())
+        mockMvc.perform(put("/api/locations/{id}", LOCATION_ID).with(oidcLogin())
                         .contentType("application/json")
                         .content(requestBody))
                 .andExpect(status().isOk())
                 .andExpect(content().json(expectedJson));
 
-        verify(locationRepo).save(argThat(l -> l.id().equals(LOCATION_ID) && l.name().equals("Neuer Name")));
+        verify(locationRepo).save(argThat(l -> l.id().equals(LOCATION_ID) && l.name().equals("Neuer Testort")));
     }
 
     @Test
     void update_throwsException_whenNotFound() {
-        // Given
-        ObjectId id = new ObjectId();
+        String id = "000000000000000000000000";
         when(locationRepo.existsById(id)).thenReturn(false);
 
         String requestBody = """
-                { "name": "Neuer Name" }
+                { "name": "Neuer Testort" }
                 """;
 
-        // When & Then
         Exception exception = assertThrows(Exception.class, () ->
-                mockMvc.perform(put("/api/locations/{id}", id.toHexString()).with(oidcLogin())
+                mockMvc.perform(put("/api/locations/{id}", id).with(oidcLogin())
                         .contentType("application/json")
                         .content(requestBody)));
 
@@ -177,8 +158,7 @@ class LocationControllerTest {
 
     @Test
     void delete_removesLocation() throws Exception {
-        // When & Then
-        mockMvc.perform(delete("/api/locations/{id}", LOCATION_ID.toHexString()).with(oidcLogin()))
+        mockMvc.perform(delete("/api/locations/{id}", LOCATION_ID).with(oidcLogin()))
                 .andExpect(status().isNoContent());
 
         verify(locationRepo).deleteById(LOCATION_ID);

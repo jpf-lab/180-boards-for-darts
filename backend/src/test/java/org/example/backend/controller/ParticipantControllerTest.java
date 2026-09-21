@@ -1,6 +1,5 @@
 package org.example.backend.controller;
 
-import org.bson.types.ObjectId;
 import org.example.backend.model.Participant;
 import org.example.backend.repository.ParticipantRepo;
 import org.junit.jupiter.api.Test;
@@ -33,11 +32,10 @@ class ParticipantControllerTest {
     @MockitoBean
     private ParticipantRepo participantRepo;
 
-    private static final ObjectId PARTICIPANT_ID = new ObjectId("507f1f77bcf86cd799439011");
+    private static final String PARTICIPANT_ID = "507f1f77bcf86cd799439011";
 
     @Test
     void getAll_returnsAllParticipants() throws Exception {
-        // Given
         Participant participant = Participant.builder().id(PARTICIPANT_ID).lastname("Nachname 1").firstname("Max 1").build();
         when(participantRepo.findAll()).thenReturn(List.of(participant));
 
@@ -45,7 +43,6 @@ class ParticipantControllerTest {
                 [ { "id": "507f1f77bcf86cd799439011", "lastname": "Nachname 1", "firstname": "Max 1" } ]
                 """;
 
-        // When & Then
         mockMvc.perform(get("/api/participants").with(oidcLogin()))
                 .andExpect(status().isOk())
                 .andExpect(content().json(expectedJson));
@@ -53,7 +50,6 @@ class ParticipantControllerTest {
 
     @Test
     void getById_returnsParticipant_whenExists() throws Exception {
-        // Given
         Participant participant = Participant.builder().id(PARTICIPANT_ID).lastname("Nachname 1").firstname("Max 1").build();
         when(participantRepo.findById(PARTICIPANT_ID)).thenReturn(Optional.of(participant));
 
@@ -61,28 +57,24 @@ class ParticipantControllerTest {
                 { "id": "507f1f77bcf86cd799439011", "lastname": "Nachname 1", "firstname": "Max 1" }
                 """;
 
-        // When & Then
-        mockMvc.perform(get("/api/participants/{id}", PARTICIPANT_ID.toHexString()).with(oidcLogin()))
+        mockMvc.perform(get("/api/participants/{id}", PARTICIPANT_ID).with(oidcLogin()))
                 .andExpect(status().isOk())
                 .andExpect(content().json(expectedJson));
     }
 
     @Test
     void getById_throwsException_whenNotFound() {
-        // Given
-        ObjectId id = new ObjectId();
+        String id = "000000000000000000000000";
         when(participantRepo.findById(id)).thenReturn(Optional.empty());
 
-        // When & Then
         Exception exception = assertThrows(Exception.class, () ->
-                mockMvc.perform(get("/api/participants/{id}", id.toHexString()).with(oidcLogin())));
+                mockMvc.perform(get("/api/participants/{id}", id).with(oidcLogin())));
 
         assertInstanceOf(NoSuchElementException.class, exception.getCause());
     }
 
     @Test
     void create_returnsCreatedParticipant() throws Exception {
-        // Given
         Participant saved = Participant.builder().id(PARTICIPANT_ID).lastname("Nachname 1").firstname("Max 1").build();
         when(participantRepo.save(any(Participant.class))).thenReturn(saved);
 
@@ -93,7 +85,6 @@ class ParticipantControllerTest {
                 { "id": "507f1f77bcf86cd799439011", "lastname": "Nachname 1", "firstname": "Max 1" }
                 """;
 
-        // When & Then
         mockMvc.perform(post("/api/participants").with(oidcLogin())
                         .contentType("application/json")
                         .content(requestBody))
@@ -103,7 +94,6 @@ class ParticipantControllerTest {
 
     @Test
     void update_returnsUpdatedParticipant_whenExists() throws Exception {
-        // Given
         Participant updated = Participant.builder().id(PARTICIPANT_ID).lastname("Neuer Nachname").firstname("Max 1").build();
 
         when(participantRepo.existsById(PARTICIPANT_ID)).thenReturn(true);
@@ -116,8 +106,7 @@ class ParticipantControllerTest {
                 { "id": "507f1f77bcf86cd799439011", "lastname": "Neuer Nachname", "firstname": "Max 1" }
                 """;
 
-        // When & Then
-        mockMvc.perform(put("/api/participants/{id}", PARTICIPANT_ID.toHexString()).with(oidcLogin())
+        mockMvc.perform(put("/api/participants/{id}", PARTICIPANT_ID).with(oidcLogin())
                         .contentType("application/json")
                         .content(requestBody))
                 .andExpect(status().isOk())
@@ -128,17 +117,15 @@ class ParticipantControllerTest {
 
     @Test
     void update_throwsException_whenNotFound() {
-        // Given
-        ObjectId id = new ObjectId();
+        String id = "000000000000000000000000";
         when(participantRepo.existsById(id)).thenReturn(false);
 
         String requestBody = """
                 { "lastname": "Neuer Nachname", "firstname": "Max 1" }
                 """;
 
-        // When & Then
         Exception exception = assertThrows(Exception.class, () ->
-                mockMvc.perform(put("/api/participants/{id}", id.toHexString()).with(oidcLogin())
+                mockMvc.perform(put("/api/participants/{id}", id).with(oidcLogin())
                         .contentType("application/json")
                         .content(requestBody)));
 
@@ -148,8 +135,7 @@ class ParticipantControllerTest {
 
     @Test
     void delete_removesParticipant() throws Exception {
-        // When & Then
-        mockMvc.perform(delete("/api/participants/{id}", PARTICIPANT_ID.toHexString()).with(oidcLogin()))
+        mockMvc.perform(delete("/api/participants/{id}", PARTICIPANT_ID).with(oidcLogin()))
                 .andExpect(status().isNoContent());
 
         verify(participantRepo).deleteById(PARTICIPANT_ID);

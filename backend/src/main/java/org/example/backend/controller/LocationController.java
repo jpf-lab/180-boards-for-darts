@@ -1,6 +1,5 @@
 package org.example.backend.controller;
 
-import org.bson.types.ObjectId;
 import org.example.backend.model.Location;
 import org.example.backend.repository.LocationRepo;
 import org.springframework.http.HttpStatus;
@@ -26,7 +25,7 @@ public class LocationController {
 
     @GetMapping("/{id}")
     public Location getById(@PathVariable String id) {
-        return locationRepo.findById(new ObjectId(id))
+        return locationRepo.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("Location not found"));
     }
 
@@ -38,16 +37,15 @@ public class LocationController {
 
     @PutMapping("/{id}")
     public Location update(@PathVariable String id, @RequestBody Location location) {
-        ObjectId objectId = new ObjectId(id);
-        if (!locationRepo.existsById(objectId)) {
+        if (!locationRepo.existsById(id)) {
             throw new NoSuchElementException("Location not found");
         }
-        return locationRepo.save(location.withId(objectId));
+        return locationRepo.save(location.withId(id));
     }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable String id) {
-        locationRepo.deleteById(new ObjectId(id));
+        locationRepo.deleteById(id);
     }
 }
