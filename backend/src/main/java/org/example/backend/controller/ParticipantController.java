@@ -1,5 +1,6 @@
 package org.example.backend.controller;
 
+import org.example.backend.dto.ParticipantDTO;
 import org.example.backend.model.Participant;
 import org.example.backend.repository.ParticipantRepo;
 import org.springframework.http.HttpStatus;
@@ -14,7 +15,7 @@ public class ParticipantController {
 
     private final ParticipantRepo participantRepo;
 
-    public ParticipantController(ParticipantRepo participantRepo) {
+    public ParticipantController(ParticipantRepo participantRepo){
         this.participantRepo = participantRepo;
     }
 
@@ -31,16 +32,26 @@ public class ParticipantController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Participant create(@RequestBody Participant participant) {
-        return participantRepo.save(participant);
+    public Participant create(@RequestBody ParticipantDTO participant) {
+        return participantRepo.save(Participant.builder()
+                .id(null)
+                .firstname(participant.firstname())
+                .lastname(participant.lastname())
+                .build()
+        );
     }
 
     @PutMapping("/{id}")
-    public Participant update(@PathVariable String id, @RequestBody Participant participant) {
+    public Participant update(@PathVariable String id, @RequestBody ParticipantDTO participant) {
         if (!participantRepo.existsById(id)) {
             throw new NoSuchElementException("Participant not found");
         }
-        return participantRepo.save(participant.withId(id));
+        return participantRepo.save(Participant.builder()
+                .id(id)
+                .firstname(participant.firstname())
+                .lastname(participant.lastname())
+                .build()
+        );
     }
 
     @DeleteMapping("/{id}")

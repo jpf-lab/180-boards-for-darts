@@ -1,5 +1,6 @@
 package org.example.backend.controller;
 
+import org.example.backend.dto.LocationDTO;
 import org.example.backend.model.Location;
 import org.example.backend.repository.LocationRepo;
 import org.springframework.http.HttpStatus;
@@ -31,16 +32,37 @@ public class LocationController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Location create(@RequestBody Location location) {
-        return locationRepo.save(location);
+    public Location create(@RequestBody LocationDTO location) {
+        return locationRepo.save(Location.builder()
+                .id(null)
+                .name(location.name())
+                .street(location.street())
+                .number(location.number())
+                .city(location.city())
+                .postalcode(location.postalcode())
+                .owner(location.owner())
+                .contactPhone(location.contactPhone())
+                .contactMail(location.contactMail())
+                .build()
+        );
     }
 
     @PutMapping("/{id}")
-    public Location update(@PathVariable String id, @RequestBody Location location) {
+    public Location update(@PathVariable String id, @RequestBody LocationDTO location) {
         if (!locationRepo.existsById(id)) {
             throw new NoSuchElementException("Location not found");
         }
-        return locationRepo.save(location.withId(id));
+        return locationRepo.save(Location.builder()
+                .id(id)
+                .name(location.name())
+                .street(location.street())
+                .number(location.number())
+                .city(location.city())
+                .postalcode(location.postalcode())
+                .owner(location.owner())
+                .contactPhone(location.contactPhone())
+                .contactMail(location.contactMail())
+                .build());
     }
 
     @DeleteMapping("/{id}")

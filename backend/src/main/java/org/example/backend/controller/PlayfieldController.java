@@ -1,5 +1,6 @@
 package org.example.backend.controller;
 
+import org.example.backend.dto.PlayfieldDTO;
 import org.example.backend.model.Playfield;
 import org.example.backend.repository.PlayfieldRepo;
 import org.springframework.http.HttpStatus;
@@ -31,16 +32,24 @@ public class PlayfieldController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Playfield create(@RequestBody Playfield playfield) {
-        return playfieldRepo.save(playfield);
+    public Playfield create(@RequestBody PlayfieldDTO playfield) {
+        return playfieldRepo.save(Playfield.builder()
+                .id(null)
+                .name(playfield.name())
+                .build()
+        );
     }
 
     @PutMapping("/{id}")
-    public Playfield update(@PathVariable String id, @RequestBody Playfield playfield) {
+    public Playfield update(@PathVariable String id, @RequestBody PlayfieldDTO playfield) {
         if (!playfieldRepo.existsById(id)) {
             throw new NoSuchElementException("Playfield not found");
         }
-        return playfieldRepo.save(playfield.withId(id));
+        return playfieldRepo.save(Playfield.builder()
+                .id(id)
+                .name(playfield.name())
+                .build()
+        );
     }
 
     @DeleteMapping("/{id}")

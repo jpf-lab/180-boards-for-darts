@@ -1,5 +1,6 @@
 package org.example.backend.controller;
 
+import org.example.backend.dto.TournamentDTO;
 import org.example.backend.model.Tournament;
 import org.example.backend.repository.TournamentRepo;
 import org.springframework.http.HttpStatus;
@@ -46,16 +47,31 @@ public class TournamentController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Tournament create(@RequestBody Tournament tournament) {
-        return tournamentRepo.save(tournament);
+    public Tournament create(@RequestBody TournamentDTO tournament) {
+        return tournamentRepo.save(Tournament.builder()
+                .name(tournament.name())
+                .datetime(tournament.datetime())
+                .locationId(tournament.locationId())
+                .participantIds(tournament.participantIds())
+                .playfieldIds(tournament.playfieldIds())
+                .build()
+        );
     }
 
     @PutMapping("/{id}")
-    public Tournament update(@PathVariable String id, @RequestBody Tournament tournament) {
+    public Tournament update(@PathVariable String id, @RequestBody TournamentDTO tournament) {
         if (!tournamentRepo.existsById(id)) {
             throw new NoSuchElementException("Tournament not found");
         }
-        return tournamentRepo.save(tournament.withId(id));
+        return tournamentRepo.save(Tournament.builder()
+                .id(id)
+                .name(tournament.name())
+                .datetime(tournament.datetime())
+                .locationId(tournament.locationId())
+                .participantIds(tournament.participantIds())
+                .playfieldIds(tournament.playfieldIds())
+                .build()
+        );
     }
 
     @DeleteMapping("/{id}")

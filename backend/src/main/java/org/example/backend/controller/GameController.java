@@ -1,5 +1,6 @@
 package org.example.backend.controller;
 
+import org.example.backend.dto.GameDTO;
 import org.example.backend.model.Game;
 import org.example.backend.repository.GameRepo;
 import org.springframework.http.HttpStatus;
@@ -50,16 +51,36 @@ public class GameController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Game create(@RequestBody Game game) {
-        return gameRepo.save(game);
+    public Game create(@RequestBody GameDTO game) {
+        return gameRepo.save(Game.builder()
+                .id(null)
+                .tournamentId(game.tournamentId())
+                .playfieldId(game.playfieldId())
+                .round(game.round())
+                .position(game.position())
+                .group(game.group())
+                .pairings(game.pairings())
+                .rounds(game.rounds())
+                .build()
+        );
     }
 
     @PutMapping("/{id}")
-    public Game update(@PathVariable String id, @RequestBody Game game) {
+    public Game update(@PathVariable String id, @RequestBody GameDTO game) {
         if (!gameRepo.existsById(id)) {
             throw new NoSuchElementException("Game not found");
         }
-        return gameRepo.save(game.withId(id));
+        return gameRepo.save(Game.builder()
+                .id(id)
+                .tournamentId(game.tournamentId())
+                .playfieldId(game.playfieldId())
+                .round(game.round())
+                .position(game.position())
+                .group(game.group())
+                .pairings(game.pairings())
+                .rounds(game.rounds())
+                .build()
+        );
     }
 
     @DeleteMapping("/{id}")
