@@ -1,8 +1,9 @@
 import axios from 'axios';
 import { useEffect } from 'react';
-import type { user, userType } from '../types/types.ts';
+import type { AppUser, AppUserType } from '../types/AppUser.ts';
+import CustomButton from './CustomButton.tsx';
 
-type OAuthProps = user;
+type OAuthProps = AppUser;
 
 function getOpen() {
   return window.location.host === 'localhost:5173'
@@ -20,35 +21,39 @@ function logout() {
 
 export default function OAuth(props: Readonly<OAuthProps>) {
   function loadUser() {
-    axios
-      .get<userType>('api/auth/me')
-      .then((r) => {
-        props.setUser({
-          name: r.data.name ? r.data.name : undefined,
-          role: r.data.role ? r.data.role : undefined,
+    if (!props.user?.name) {
+      axios
+        .get<AppUserType>('api/auth/me')
+        .then((r) => {
+          props.setUser({
+            name: r.data.name ? r.data.name : undefined,
+            role: r.data.role ? r.data.role : undefined,
+          });
+        })
+        .catch((e) => {
+          props.setUser(undefined);
+          console.error(e);
         });
-      })
-      .catch((e) => {
-        props.setUser(undefined);
-        console.error(e);
-      });
+    }
   }
 
   useEffect(() => {
-    loadUser();
+    if (!props.user?.name) {
+      loadUser();
+    }
   });
 
   return (
-    <>
+    <div>
       {props.user?.name && (
         <>
-          <span>
+          <span className={'mr-5'}>
             Hallo <span dangerouslySetInnerHTML={{ __html: props.user?.name }}></span>
           </span>
-          <button onClick={logout}>Logout!</button>
+          <CustomButton onClick={logout}>Logout</CustomButton>
         </>
       )}
-      {!props.user?.name && <button onClick={login}>Login</button>}
-    </>
+      {!props.user?.name && <CustomButton onClick={login}>Login</CustomButton>}
+    </div>
   );
 }
