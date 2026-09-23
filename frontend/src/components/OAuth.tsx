@@ -1,55 +1,54 @@
-import axios from "axios";
-import {useEffect} from "react";
-import type {user, userType} from "../types/types.ts";
+import axios from 'axios';
+import { useEffect } from 'react';
+import type { user, userType } from '../types/types.ts';
 
-type OAuthProps = user
+type OAuthProps = user;
 
-function getOpen(){
-    return window.location.host === 'localhost:5173' ?
-        'http://localhost:8080'
-        :
-        window.location.origin
+function getOpen() {
+  return window.location.host === 'localhost:5173'
+    ? 'http://localhost:8080'
+    : window.location.origin;
 }
 
 function login() {
-    window.open(getOpen() + '/oauth2/authorization/github', '_self')
+  window.open(getOpen() + '/oauth2/authorization/github', '_self');
 }
 
 function logout() {
-    window.open(getOpen() + '/logout', '_self')
+  window.open(getOpen() + '/logout', '_self');
 }
 
 export default function OAuth(props: Readonly<OAuthProps>) {
+  function loadUser() {
+    axios
+      .get<userType>('api/auth/me')
+      .then((r) => {
+        props.setUser({
+          name: r.data.name ? r.data.name : undefined,
+          role: r.data.role ? r.data.role : undefined,
+        });
+      })
+      .catch((e) => {
+        props.setUser(undefined);
+        console.error(e);
+      });
+  }
 
-    function loadUser() {
-        axios.get<userType>("api/auth/me")
-            .then(r => {
-                props.setUser({
-                    name: r.data.name ? r.data.name : undefined,
-                    role: r.data.role ? r.data.role : undefined,
-                })
-            })
-            .catch(e => {
-                props.setUser(undefined)
-                console.error(e)
-            })
-    }
+  useEffect(() => {
+    loadUser();
+  });
 
-    useEffect(() => {
-        loadUser()
-    });
-
-    return (
+  return (
+    <>
+      {props.user?.name && (
         <>
-            {props.user?.name &&
-                <>
-                    <span>Hallo <span dangerouslySetInnerHTML={{__html: props.user?.name}}></span></span>
-                    <button onClick={logout}>Logout!</button>
-                </>
-            }
-            {!props.user?.name &&
-                <button onClick={login}>Login</button>
-            }
+          <span>
+            Hallo <span dangerouslySetInnerHTML={{ __html: props.user?.name }}></span>
+          </span>
+          <button onClick={logout}>Logout!</button>
         </>
-    )
+      )}
+      {!props.user?.name && <button onClick={login}>Login</button>}
+    </>
+  );
 }
