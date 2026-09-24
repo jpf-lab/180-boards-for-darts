@@ -6,8 +6,8 @@ export type TournamentOverviewItem = {
   name?: string;
   date?: number;
   location?: Location;
-  participantIds?: String[];
-  playfieldIds?: String[];
+  participantIds?: string[];
+  playfieldIds?: string[];
 };
 
 export type Location = {
