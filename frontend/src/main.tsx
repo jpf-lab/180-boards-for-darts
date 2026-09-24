@@ -3,8 +3,8 @@ import { createRoot } from 'react-dom/client';
 import { BrowserRouter } from 'react-router';
 import './css/index.css';
 import App from './App.tsx';
-import Tournaments from './pages/Tournaments.tsx';
-import Home from './pages/Home.tsx';
+import Tournaments from './routes/Tournaments.tsx';
+import Home from './routes/Home.tsx';
 
 export const navi = [
   {
