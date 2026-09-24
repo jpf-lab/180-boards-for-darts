@@ -13,11 +13,11 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
+import static org.example.backend.security.TestSecurity.adminLogin;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.oidcLogin;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -43,7 +43,7 @@ class PlayfieldControllerTest {
                 [ { "id": "507f1f77bcf86cd799439011", "name": "Dartscheibe 1" } ]
                 """;
 
-        mockMvc.perform(get("/api/playfields").with(oidcLogin()))
+        mockMvc.perform(get("/api/playfields").with(adminLogin()))
                 .andExpect(status().isOk())
                 .andExpect(content().json(expectedJson));
     }
@@ -57,7 +57,7 @@ class PlayfieldControllerTest {
                 { "id": "507f1f77bcf86cd799439011", "name": "Dartscheibe 1" }
                 """;
 
-        mockMvc.perform(get("/api/playfields/{id}", PLAYFIELD_ID).with(oidcLogin()))
+        mockMvc.perform(get("/api/playfields/{id}", PLAYFIELD_ID).with(adminLogin()))
                 .andExpect(status().isOk())
                 .andExpect(content().json(expectedJson));
     }
@@ -68,7 +68,7 @@ class PlayfieldControllerTest {
         when(playfieldRepo.findById(id)).thenReturn(Optional.empty());
 
         Exception exception = assertThrows(Exception.class, () ->
-                mockMvc.perform(get("/api/playfields/{id}", id).with(oidcLogin())));
+                mockMvc.perform(get("/api/playfields/{id}", id).with(adminLogin())));
 
         assertInstanceOf(NoSuchElementException.class, exception.getCause());
     }
@@ -85,7 +85,7 @@ class PlayfieldControllerTest {
                 { "id": "507f1f77bcf86cd799439011", "name": "Dartscheibe 1" }
                 """;
 
-        mockMvc.perform(post("/api/playfields").with(oidcLogin())
+        mockMvc.perform(post("/api/playfields").with(adminLogin())
                         .contentType("application/json")
                         .content(requestBody))
                 .andExpect(status().isCreated())
@@ -106,7 +106,7 @@ class PlayfieldControllerTest {
                 { "id": "507f1f77bcf86cd799439011", "name": "Dartscheibe neu" }
                 """;
 
-        mockMvc.perform(put("/api/playfields/{id}", PLAYFIELD_ID).with(oidcLogin())
+        mockMvc.perform(put("/api/playfields/{id}", PLAYFIELD_ID).with(adminLogin())
                         .contentType("application/json")
                         .content(requestBody))
                 .andExpect(status().isOk())
@@ -125,7 +125,7 @@ class PlayfieldControllerTest {
                 """;
 
         Exception exception = assertThrows(Exception.class, () ->
-                mockMvc.perform(put("/api/playfields/{id}", id).with(oidcLogin())
+                mockMvc.perform(put("/api/playfields/{id}", id).with(adminLogin())
                         .contentType("application/json")
                         .content(requestBody)));
 
@@ -135,7 +135,7 @@ class PlayfieldControllerTest {
 
     @Test
     void delete_removesPlayfield() throws Exception {
-        mockMvc.perform(delete("/api/playfields/{id}", PLAYFIELD_ID).with(oidcLogin()))
+        mockMvc.perform(delete("/api/playfields/{id}", PLAYFIELD_ID).with(adminLogin()))
                 .andExpect(status().isNoContent());
 
         verify(playfieldRepo).deleteById(PLAYFIELD_ID);

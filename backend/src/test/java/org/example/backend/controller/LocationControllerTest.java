@@ -13,11 +13,11 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
+import static org.example.backend.security.TestSecurity.adminLogin;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.oidcLogin;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -66,7 +66,7 @@ class LocationControllerTest {
                 ]
                 """;
 
-        mockMvc.perform(get("/api/locations").with(oidcLogin()))
+        mockMvc.perform(get("/api/locations").with(adminLogin()))
                 .andExpect(status().isOk())
                 .andExpect(content().json(expectedJson));
     }
@@ -80,7 +80,7 @@ class LocationControllerTest {
                 { "id": "507f1f77bcf86cd799439011", "name": "Testort", "city": "Teststadt" }
                 """;
 
-        mockMvc.perform(get("/api/locations/{id}", LOCATION_ID).with(oidcLogin()))
+        mockMvc.perform(get("/api/locations/{id}", LOCATION_ID).with(adminLogin()))
                 .andExpect(status().isOk())
                 .andExpect(content().json(expectedJson));
     }
@@ -91,7 +91,7 @@ class LocationControllerTest {
         when(locationRepo.findById(id)).thenReturn(Optional.empty());
 
         Exception exception = assertThrows(Exception.class, () ->
-                mockMvc.perform(get("/api/locations/{id}", id).with(oidcLogin())));
+                mockMvc.perform(get("/api/locations/{id}", id).with(adminLogin())));
 
         assertInstanceOf(NoSuchElementException.class, exception.getCause());
     }
@@ -108,7 +108,7 @@ class LocationControllerTest {
                 { "id": "507f1f77bcf86cd799439011", "name": "Testort", "city": "Teststadt" }
                 """;
 
-        mockMvc.perform(post("/api/locations").with(oidcLogin())
+        mockMvc.perform(post("/api/locations").with(adminLogin())
                         .contentType("application/json")
                         .content(requestBody))
                 .andExpect(status().isCreated())
@@ -129,7 +129,7 @@ class LocationControllerTest {
                 { "id": "507f1f77bcf86cd799439011", "name": "Neuer Testort", "city": "Teststadt" }
                 """;
 
-        mockMvc.perform(put("/api/locations/{id}", LOCATION_ID).with(oidcLogin())
+        mockMvc.perform(put("/api/locations/{id}", LOCATION_ID).with(adminLogin())
                         .contentType("application/json")
                         .content(requestBody))
                 .andExpect(status().isOk())
@@ -148,7 +148,7 @@ class LocationControllerTest {
                 """;
 
         Exception exception = assertThrows(Exception.class, () ->
-                mockMvc.perform(put("/api/locations/{id}", id).with(oidcLogin())
+                mockMvc.perform(put("/api/locations/{id}", id).with(adminLogin())
                         .contentType("application/json")
                         .content(requestBody)));
 
@@ -158,7 +158,7 @@ class LocationControllerTest {
 
     @Test
     void delete_removesLocation() throws Exception {
-        mockMvc.perform(delete("/api/locations/{id}", LOCATION_ID).with(oidcLogin()))
+        mockMvc.perform(delete("/api/locations/{id}", LOCATION_ID).with(adminLogin()))
                 .andExpect(status().isNoContent());
 
         verify(locationRepo).deleteById(LOCATION_ID);

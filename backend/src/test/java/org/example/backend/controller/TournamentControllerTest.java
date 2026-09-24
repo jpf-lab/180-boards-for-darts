@@ -13,11 +13,11 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
+import static org.example.backend.security.TestSecurity.adminLogin;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.oidcLogin;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -46,7 +46,7 @@ class TournamentControllerTest {
                 [ { "id": "507f1f77bcf86cd799439011", "name": "turnier 1" } ]
                 """;
 
-        mockMvc.perform(get("/api/tournaments").with(oidcLogin()))
+        mockMvc.perform(get("/api/tournaments").with(adminLogin()))
                 .andExpect(status().isOk())
                 .andExpect(content().json(expectedJson));
     }
@@ -60,7 +60,7 @@ class TournamentControllerTest {
                 { "id": "507f1f77bcf86cd799439011", "name": "turnier 1" }
                 """;
 
-        mockMvc.perform(get("/api/tournaments/{id}", TOURNAMENT_ID).with(oidcLogin()))
+        mockMvc.perform(get("/api/tournaments/{id}", TOURNAMENT_ID).with(adminLogin()))
                 .andExpect(status().isOk())
                 .andExpect(content().json(expectedJson));
     }
@@ -71,7 +71,7 @@ class TournamentControllerTest {
         when(tournamentRepo.findById(id)).thenReturn(Optional.empty());
 
         Exception exception = assertThrows(Exception.class, () ->
-                mockMvc.perform(get("/api/tournaments/{id}", id).with(oidcLogin())));
+                mockMvc.perform(get("/api/tournaments/{id}", id).with(adminLogin())));
 
         assertInstanceOf(NoSuchElementException.class, exception.getCause());
     }
@@ -85,7 +85,7 @@ class TournamentControllerTest {
                 [ { "id": "507f1f77bcf86cd799439011", "name": "turnier 1", "locationId": "507f1f77bcf86cd799439012" } ]
                 """;
 
-        mockMvc.perform(get("/api/tournaments").param("locationId", LOCATION_ID).with(oidcLogin()))
+        mockMvc.perform(get("/api/tournaments").param("locationId", LOCATION_ID).with(adminLogin()))
                 .andExpect(status().isOk())
                 .andExpect(content().json(expectedJson));
     }
@@ -100,7 +100,7 @@ class TournamentControllerTest {
                 [ { "id": "507f1f77bcf86cd799439011", "name": "turnier 1", "participantIds": ["507f1f77bcf86cd799439013"] } ]
                 """;
 
-        mockMvc.perform(get("/api/tournaments").param("participantId", PARTICIPANT_ID).with(oidcLogin()))
+        mockMvc.perform(get("/api/tournaments").param("participantId", PARTICIPANT_ID).with(adminLogin()))
                 .andExpect(status().isOk())
                 .andExpect(content().json(expectedJson));
     }
@@ -115,7 +115,7 @@ class TournamentControllerTest {
                 [ { "id": "507f1f77bcf86cd799439011", "name": "turnier 1", "playfieldIds": ["507f1f77bcf86cd799439014"] } ]
                 """;
 
-        mockMvc.perform(get("/api/tournaments").param("playfieldId", PLAYFIELD_ID).with(oidcLogin()))
+        mockMvc.perform(get("/api/tournaments").param("playfieldId", PLAYFIELD_ID).with(adminLogin()))
                 .andExpect(status().isOk())
                 .andExpect(content().json(expectedJson));
     }
@@ -132,7 +132,7 @@ class TournamentControllerTest {
                 { "id": "507f1f77bcf86cd799439011", "name": "turnier 1" }
                 """;
 
-        mockMvc.perform(post("/api/tournaments").with(oidcLogin())
+        mockMvc.perform(post("/api/tournaments").with(adminLogin())
                         .contentType("application/json")
                         .content(requestBody))
                 .andExpect(status().isCreated())
@@ -153,7 +153,7 @@ class TournamentControllerTest {
                 { "id": "507f1f77bcf86cd799439011", "name": "neuer name" }
                 """;
 
-        mockMvc.perform(put("/api/tournaments/{id}", TOURNAMENT_ID).with(oidcLogin())
+        mockMvc.perform(put("/api/tournaments/{id}", TOURNAMENT_ID).with(adminLogin())
                         .contentType("application/json")
                         .content(requestBody))
                 .andExpect(status().isOk())
@@ -172,7 +172,7 @@ class TournamentControllerTest {
                 """;
 
         Exception exception = assertThrows(Exception.class, () ->
-                mockMvc.perform(put("/api/tournaments/{id}", id).with(oidcLogin())
+                mockMvc.perform(put("/api/tournaments/{id}", id).with(adminLogin())
                         .contentType("application/json")
                         .content(requestBody)));
 
@@ -182,7 +182,7 @@ class TournamentControllerTest {
 
     @Test
     void delete_removesTournament() throws Exception {
-        mockMvc.perform(delete("/api/tournaments/{id}", TOURNAMENT_ID).with(oidcLogin()))
+        mockMvc.perform(delete("/api/tournaments/{id}", TOURNAMENT_ID).with(adminLogin()))
                 .andExpect(status().isNoContent());
 
         verify(tournamentRepo).deleteById(TOURNAMENT_ID);
