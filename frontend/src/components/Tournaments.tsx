@@ -69,11 +69,15 @@ export default function Tournaments() {
                   <tr key={'tournamentRow' + index} className={`${trBodyClassname}`}>
                     <td className={`${tdClassname}`}>{tournament.name}</td>
                     <td className={`${tdClassname}`}>
-                      {tournament.date ? new Date(tournament.date).toLocaleString() : 'Not set'}
+                      {tournament.date ? new Date(tournament.date).toLocaleString() : 'Not found'}
                     </td>
-                    <td className={`${tdClassname}`}>{tournament.location?.name}</td>
-                    <td className={`${tdClassname}`}>{tournament.participants?.length}</td>
-                    <td className={`${tdClassname}`}>{tournament.playfields?.length}</td>
+                    <td className={`${tdClassname}`}>{tournament.location?.name || 'Not found'}</td>
+                    <td className={`${tdClassname}`}>
+                      {tournament.participantIds?.length || 'Not found'}
+                    </td>
+                    <td className={`${tdClassname}`}>
+                      {tournament.playfieldIds?.length || 'Not found'}
+                    </td>
                     <td className={`${tdClassname}`}>
                       <CustomButton>
                         <PencilIcon className={'size-3'} title={'Edit'} />
