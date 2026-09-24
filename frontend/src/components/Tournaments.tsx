@@ -39,7 +39,7 @@ export default function Tournaments() {
   return (
     <>
       <Headline variant={'h1'}>Tournaments</Headline>
-      {error ? (
+      {error && (
         <div
           className={'p-4 my-4 rounded-2xl bg-red-100 text-red-700 flex items-center'}
           role="alert"
@@ -47,9 +47,9 @@ export default function Tournaments() {
           <ExclamationCircleIcon className={'size-5 inline-block mr-4'} />
           <span>{error}</span>
         </div>
-      ) : loading ? (
-        <>Loading...</>
-      ) : (
+      )}
+      {loading && <>Loading...</>}
+      {!error && !loading && (
         <div className={'border-2 border-sky-800 bg-gray-950 rounded-2xl text-left'}>
           <table className={'w-full table-auto'}>
             <thead className={''}>
