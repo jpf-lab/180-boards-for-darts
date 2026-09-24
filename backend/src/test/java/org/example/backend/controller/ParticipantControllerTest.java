@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -13,6 +14,7 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
+import static org.example.backend.security.TestSecurity.adminLogin;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -43,7 +45,7 @@ class ParticipantControllerTest {
                 [ { "id": "507f1f77bcf86cd799439011", "lastname": "Nachname 1", "firstname": "Max 1" } ]
                 """;
 
-        mockMvc.perform(get("/api/participants").with(oidcLogin()))
+        mockMvc.perform(get("/api/participants").with(adminLogin()))
                 .andExpect(status().isOk())
                 .andExpect(content().json(expectedJson));
     }
@@ -57,7 +59,7 @@ class ParticipantControllerTest {
                 { "id": "507f1f77bcf86cd799439011", "lastname": "Nachname 1", "firstname": "Max 1" }
                 """;
 
-        mockMvc.perform(get("/api/participants/{id}", PARTICIPANT_ID).with(oidcLogin()))
+        mockMvc.perform(get("/api/participants/{id}", PARTICIPANT_ID).with(adminLogin()))
                 .andExpect(status().isOk())
                 .andExpect(content().json(expectedJson));
     }
@@ -68,7 +70,7 @@ class ParticipantControllerTest {
         when(participantRepo.findById(id)).thenReturn(Optional.empty());
 
         Exception exception = assertThrows(Exception.class, () ->
-                mockMvc.perform(get("/api/participants/{id}", id).with(oidcLogin())));
+                mockMvc.perform(get("/api/participants/{id}", id).with(adminLogin())));
 
         assertInstanceOf(NoSuchElementException.class, exception.getCause());
     }
@@ -85,7 +87,7 @@ class ParticipantControllerTest {
                 { "id": "507f1f77bcf86cd799439011", "lastname": "Nachname 1", "firstname": "Max 1" }
                 """;
 
-        mockMvc.perform(post("/api/participants").with(oidcLogin())
+        mockMvc.perform(post("/api/participants").with(adminLogin())
                         .contentType("application/json")
                         .content(requestBody))
                 .andExpect(status().isCreated())
@@ -106,7 +108,7 @@ class ParticipantControllerTest {
                 { "id": "507f1f77bcf86cd799439011", "lastname": "Neuer Nachname", "firstname": "Max 1" }
                 """;
 
-        mockMvc.perform(put("/api/participants/{id}", PARTICIPANT_ID).with(oidcLogin())
+        mockMvc.perform(put("/api/participants/{id}", PARTICIPANT_ID).with(adminLogin())
                         .contentType("application/json")
                         .content(requestBody))
                 .andExpect(status().isOk())
@@ -125,7 +127,7 @@ class ParticipantControllerTest {
                 """;
 
         Exception exception = assertThrows(Exception.class, () ->
-                mockMvc.perform(put("/api/participants/{id}", id).with(oidcLogin())
+                mockMvc.perform(put("/api/participants/{id}", id).with(adminLogin())
                         .contentType("application/json")
                         .content(requestBody)));
 
@@ -135,7 +137,7 @@ class ParticipantControllerTest {
 
     @Test
     void delete_removesParticipant() throws Exception {
-        mockMvc.perform(delete("/api/participants/{id}", PARTICIPANT_ID).with(oidcLogin()))
+        mockMvc.perform(delete("/api/participants/{id}", PARTICIPANT_ID).with(adminLogin()))
                 .andExpect(status().isNoContent());
 
         verify(participantRepo).deleteById(PARTICIPANT_ID);

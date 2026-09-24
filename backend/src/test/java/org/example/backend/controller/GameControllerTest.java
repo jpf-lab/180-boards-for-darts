@@ -14,12 +14,12 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
+import static org.example.backend.security.TestSecurity.adminLogin;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.*;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.oidcLogin;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -64,7 +64,7 @@ class GameControllerTest {
                 ]
                 """;
 
-        mockMvc.perform(get("/api/games").with(oidcLogin()))
+        mockMvc.perform(get("/api/games").with(adminLogin()))
                 .andExpect(status().isOk())
                 .andExpect(content().json(expectedJson));
     }
@@ -87,7 +87,7 @@ class GameControllerTest {
                 }
                 """;
 
-        mockMvc.perform(get("/api/games/{id}", GAME_ID).with(oidcLogin()))
+        mockMvc.perform(get("/api/games/{id}", GAME_ID).with(adminLogin()))
                 .andExpect(status().isOk())
                 .andExpect(content().json(expectedJson));
     }
@@ -98,7 +98,7 @@ class GameControllerTest {
         when(gameRepo.findById(id)).thenReturn(Optional.empty());
 
         Exception exception = assertThrows(Exception.class, () ->
-                mockMvc.perform(get("/api/games/{id}", id).with(oidcLogin())));
+                mockMvc.perform(get("/api/games/{id}", id).with(adminLogin())));
 
         assertInstanceOf(NoSuchElementException.class, exception.getCause());
     }
@@ -122,7 +122,7 @@ class GameControllerTest {
                 ]
                 """;
 
-        mockMvc.perform(get("/api/games").param("tournamentId", TOURNAMENT_ID).with(oidcLogin()))
+        mockMvc.perform(get("/api/games").param("tournamentId", TOURNAMENT_ID).with(adminLogin()))
                 .andExpect(status().isOk())
                 .andExpect(content().json(expectedJson));
 
@@ -152,7 +152,7 @@ class GameControllerTest {
         mockMvc.perform(get("/api/games")
                         .param("tournamentId", TOURNAMENT_ID)
                         .param("round", "2")
-                        .with(oidcLogin()))
+                        .with(adminLogin()))
                 .andExpect(status().isOk())
                 .andExpect(content().json(expectedJson));
     }
@@ -174,7 +174,7 @@ class GameControllerTest {
                 ]
                 """;
 
-        mockMvc.perform(get("/api/games").param("playfieldId", PLAYFIELD_ID).with(oidcLogin()))
+        mockMvc.perform(get("/api/games").param("playfieldId", PLAYFIELD_ID).with(adminLogin()))
                 .andExpect(status().isOk())
                 .andExpect(content().json(expectedJson));
     }
@@ -209,7 +209,7 @@ class GameControllerTest {
                 ]
                 """;
 
-        mockMvc.perform(get("/api/games").param("participantId", PARTICIPANT_ID).with(oidcLogin()))
+        mockMvc.perform(get("/api/games").param("participantId", PARTICIPANT_ID).with(adminLogin()))
                 .andExpect(status().isOk())
                 .andExpect(content().json(expectedJson));
     }
@@ -240,7 +240,7 @@ class GameControllerTest {
                 }
                 """;
 
-        mockMvc.perform(post("/api/games").with(oidcLogin())
+        mockMvc.perform(post("/api/games").with(adminLogin())
                         .contentType("application/json")
                         .content(requestBody))
                 .andExpect(status().isCreated())
@@ -285,7 +285,7 @@ class GameControllerTest {
                 }
                 """;
 
-        mockMvc.perform(put("/api/games/{id}", GAME_ID).with(oidcLogin())
+        mockMvc.perform(put("/api/games/{id}", GAME_ID).with(adminLogin())
                         .contentType("application/json")
                         .content(requestBody))
                 .andExpect(status().isOk())
@@ -308,7 +308,7 @@ class GameControllerTest {
                 """;
 
         Exception exception = assertThrows(Exception.class, () ->
-                mockMvc.perform(put("/api/games/{id}", id).with(oidcLogin())
+                mockMvc.perform(put("/api/games/{id}", id).with(adminLogin())
                         .contentType("application/json")
                         .content(requestBody)));
 
@@ -318,7 +318,7 @@ class GameControllerTest {
 
     @Test
     void delete_removesGame() throws Exception {
-        mockMvc.perform(delete("/api/games/{id}", GAME_ID).with(oidcLogin()))
+        mockMvc.perform(delete("/api/games/{id}", GAME_ID).with(adminLogin()))
                 .andExpect(status().isNoContent());
 
         verify(gameRepo).deleteById(GAME_ID);
