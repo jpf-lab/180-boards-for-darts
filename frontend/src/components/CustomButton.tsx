@@ -16,10 +16,9 @@ type CustomButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
 export default function CustomButton({ variant = 'primary', ...props }: CustomButtonProps) {
   return (
     <button
-      onClick={props.onClick}
       className={`hover:cursor-pointer px-5 py-2 text-white rounded-2xl ${variantColor[variant]}`}
-    >
-      {props.children}
-    </button>
+      title={props.title}
+      {...props}
+    />
   );
 }

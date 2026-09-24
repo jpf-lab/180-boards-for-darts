@@ -1,7 +1,9 @@
+import Headline from './Headline.tsx';
+
 export default function Home() {
   return (
     <>
-      <h1>Home</h1>
+      <Headline variant={'h1'}>Home</Headline>
     </>
   );
 }
