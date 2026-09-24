@@ -50,10 +50,16 @@ export default function OAuth(props: Readonly<OAuthProps>) {
           <span className={'mr-5'}>
             Hallo <span dangerouslySetInnerHTML={{ __html: props.user?.name }}></span>
           </span>
-          <CustomButton onClick={logout}>Logout</CustomButton>
+          <CustomButton onClick={logout} title={'Logout'}>
+            Logout
+          </CustomButton>
         </>
       )}
-      {!props.user?.name && <CustomButton onClick={login}>Login</CustomButton>}
+      {!props.user?.name && (
+        <CustomButton onClick={login} title={'Login'}>
+          Login
+        </CustomButton>
+      )}
     </div>
   );
 }

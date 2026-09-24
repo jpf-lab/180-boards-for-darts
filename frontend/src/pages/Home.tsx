@@ -1,4 +1,4 @@
-import Headline from './Headline.tsx';
+import Headline from '../components/Headline.tsx';
 
 export default function Home() {
   return (

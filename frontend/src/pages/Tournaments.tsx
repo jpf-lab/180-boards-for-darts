@@ -1,10 +1,11 @@
 import { PencilIcon } from '@heroicons/react/24/solid';
-import CustomButton from './CustomButton.tsx';
+import CustomButton from '../components/CustomButton.tsx';
 import { useEffect, useState } from 'react';
 import type { TournamentOverview, TournamentOverviewItem } from '../types/Tournament.ts';
-import { ExclamationCircleIcon, TrashIcon } from '@heroicons/react/20/solid';
+import { TrashIcon } from '@heroicons/react/20/solid';
 import { getTournamentOverview } from '../api/tournaments.ts';
-import Headline from './Headline.tsx';
+import Headline from '../components/Headline.tsx';
+import Alert from '../components/Alert.tsx';
 
 export default function Tournaments() {
   const [tournaments, setTournaments] = useState<TournamentOverview>({
@@ -40,13 +41,9 @@ export default function Tournaments() {
     <>
       <Headline variant={'h1'}>Tournaments</Headline>
       {error && (
-        <div
-          className={'p-4 my-4 rounded-2xl bg-red-100 text-red-700 flex items-center'}
-          role="alert"
-        >
-          <ExclamationCircleIcon className={'size-5 inline-block mr-4'} />
+        <Alert variant={'error'}>
           <span>{error}</span>
-        </div>
+        </Alert>
       )}
       {loading && <>Loading...</>}
       {!error && !loading && (
@@ -93,7 +90,7 @@ export default function Tournaments() {
               ) : (
                 <tr className={`${trBodyClassname}`}>
                   <td className={`text-center ${tdClassname}`} colSpan={7}>
-                    Not tournaments found
+                    No tournaments found
                   </td>
                 </tr>
               )}

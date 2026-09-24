@@ -1,11 +1,11 @@
 import { Routes, Route } from 'react-router';
-import '../css/App.css';
-import Navigation from './Navigation';
-import Header from './Header.tsx';
-import Footer from './Footer';
+import './css/App.css';
+import Navigation from './components/Navigation.tsx';
+import Header from './components/Header.tsx';
+import Footer from './components/Footer.tsx';
 import { useState } from 'react';
-import type { AppUserType } from '../types/AppUser.ts';
-import { navi } from '../main.tsx';
+import type { AppUserType } from './types/AppUser.ts';
+import { navi } from './main.tsx';
 
 function App() {
   const [user, setUser] = useState<AppUserType | undefined>(undefined);
