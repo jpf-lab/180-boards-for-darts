@@ -8,6 +8,7 @@ import Alert from '../components/Alert.tsx';
 import LoadingText from '../components/LoadingText.tsx';
 import { getTournamentOverview } from '../utils/tournamentHelper.ts';
 import LocationLink from '../components/LocationLink.tsx';
+import { Link } from 'react-router-dom';
 
 export default function Tournaments() {
   const [tournaments, setTournaments] = useState<TournamentOverview>({
@@ -88,9 +89,11 @@ export default function Tournaments() {
                       {tournament.playfieldIds?.length || 'Not found'}
                     </td>
                     <td className={`${tdClassname}`}>
-                      <CustomButton>
-                        <PencilIcon className={'size-3'} title={'Edit'} />
-                      </CustomButton>
+                      <Link to={`/tournaments/${tournament.id}/edit`}>
+                        <CustomButton>
+                          <PencilIcon className={'size-3'} title={'Edit'} />
+                        </CustomButton>
+                      </Link>
                     </td>
                     <td className={`${tdClassname}`}>
                       <CustomButton variant={'red'} title={'Delete'}>
