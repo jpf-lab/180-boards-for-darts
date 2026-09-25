@@ -2,15 +2,21 @@ export type TournamentOverview = {
   tournaments?: TournamentOverviewItem[];
 };
 
-export type TournamentOverviewItem = {
+export type TournamentItemResponse = {
+  id?: string;
   name?: string;
-  date?: number;
-  location?: Location;
+  datetime?: string;
+  locationId?: string;
   participantIds?: string[];
   playfieldIds?: string[];
 };
 
-export type Location = {
+export type TournamentOverviewItem = TournamentItemResponse & {
+  location?: TournamentLocation;
+};
+
+export type TournamentLocation = {
+  id?: string;
   name?: string;
   street?: string;
   number?: string;
@@ -21,32 +27,35 @@ export type Location = {
   contactMail?: string;
 };
 
-export type Participant = {
+export type TournamentParticipant = {
+  id?: string;
   lastname?: string;
   firstname?: string;
 };
 
-export type Playfield = {
+export type TournamentPlayfield = {
+  id?: string;
   name?: string;
 };
 
-export type Game = {
+export type TournamentGame = {
+  id?: string;
   tournamentId: string;
   playfieldId: string;
   round: number;
   position: number;
   group: number;
-  pairings: Pairing[];
-  rounds: GameRound[];
+  pairings: TournamentPairing[];
+  rounds: TournamentGameRound[];
 };
 
-export type Pairing = {
+export type TournamentPairing = {
   participantId: string;
   team?: number;
   teamOrder?: number;
 };
 
-export type GameRound = {
+export type TournamentGameRound = {
   roundNumber: number;
   startingPlayer: string;
   winner?: string;

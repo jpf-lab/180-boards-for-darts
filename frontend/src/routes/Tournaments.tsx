@@ -3,10 +3,11 @@ import CustomButton from '../components/CustomButton.tsx';
 import { useEffect, useState } from 'react';
 import type { TournamentOverview, TournamentOverviewItem } from '../types/Tournament.ts';
 import { TrashIcon } from '@heroicons/react/20/solid';
-import { getTournamentOverview } from '../api/tournaments.ts';
 import Headline from '../components/Headline.tsx';
 import Alert from '../components/Alert.tsx';
 import LoadingText from '../components/LoadingText.tsx';
+import { getTournamentOverview } from '../utils/tournamentHelper.ts';
+import LocationLink from '../components/LocationLink.tsx';
 
 export default function Tournaments() {
   const [tournaments, setTournaments] = useState<TournamentOverview>({
@@ -19,15 +20,17 @@ export default function Tournaments() {
     setLoading(true);
     setError(null);
 
-    try {
-      const response: TournamentOverview = await getTournamentOverview();
-      setTournaments(response);
-    } catch (err) {
-      console.error('Failed to load tournaments', err);
+    const tournaments = await getTournamentOverview();
+
+    if (!tournaments) {
       setError('Failed to load tournaments.');
-    } finally {
       setLoading(false);
+      return;
     }
+
+    setTournaments(tournaments);
+
+    setLoading(false);
   }
 
   const thClassname = 'p-2';
@@ -71,9 +74,13 @@ export default function Tournaments() {
                   <tr key={'tournamentRow' + index} className={`${trBodyClassname}`}>
                     <td className={`${tdClassname}`}>{tournament.name}</td>
                     <td className={`${tdClassname}`}>
-                      {tournament.date ? new Date(tournament.date).toLocaleString() : 'Not found'}
+                      {tournament.datetime
+                        ? new Date(tournament.datetime).toLocaleString()
+                        : 'Not found'}
                     </td>
-                    <td className={`${tdClassname}`}>{tournament.location?.name || 'Not found'}</td>
+                    <td className={`${tdClassname}`}>
+                      <LocationLink variant={'name'} {...tournament.location} />
+                    </td>
                     <td className={`${tdClassname}`}>
                       {tournament.participantIds?.length || 'Not found'}
                     </td>
