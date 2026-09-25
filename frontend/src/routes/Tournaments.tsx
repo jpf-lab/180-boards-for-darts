@@ -6,6 +6,7 @@ import { TrashIcon } from '@heroicons/react/20/solid';
 import { getTournamentOverview } from '../api/tournaments.ts';
 import Headline from '../components/Headline.tsx';
 import Alert from '../components/Alert.tsx';
+import LoadingText from '../components/LoadingText.tsx';
 
 export default function Tournaments() {
   const [tournaments, setTournaments] = useState<TournamentOverview>({
@@ -45,7 +46,11 @@ export default function Tournaments() {
           <span>{error}</span>
         </Alert>
       )}
-      {loading && <>Loading...</>}
+      {loading && (
+        <div>
+          <LoadingText />
+        </div>
+      )}
       {!error && !loading && (
         <div className={'border-2 border-sky-800 bg-gray-950 rounded-2xl text-left'}>
           <table className={'w-full table-auto'}>
