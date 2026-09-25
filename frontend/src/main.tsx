@@ -1,4 +1,4 @@
-import { StrictMode } from 'react';
+import { type JSX, StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter } from 'react-router';
 import './css/index.css';
@@ -6,7 +6,16 @@ import App from './App.tsx';
 import Tournaments from './routes/Tournaments.tsx';
 import Home from './routes/Home.tsx';
 
-export const navi = [
+type naviProps = naviItem[];
+
+type naviItem = {
+  name: string;
+  link: string;
+  component: JSX.Element;
+  protected?: boolean;
+};
+
+export const navi: naviProps = [
   {
     name: 'Home',
     link: '/',
@@ -16,6 +25,7 @@ export const navi = [
     name: 'Tournaments',
     link: '/tournaments',
     component: <Tournaments />,
+    protected: true,
   },
 ];
 
