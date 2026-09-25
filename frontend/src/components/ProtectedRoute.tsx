@@ -4,7 +4,7 @@ import LoadingText from './LoadingText.tsx';
 
 type ProtectedRouteProps = Pick<AppUser, 'user'>;
 
-export default function ProtectedRoutes(props: ProtectedRouteProps) {
+export default function ProtectedRoutes(props: Readonly<ProtectedRouteProps>) {
   if (props.user === undefined) {
     return (
       <div>

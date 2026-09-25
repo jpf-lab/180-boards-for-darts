@@ -4,7 +4,7 @@ type LoadinTextProps = {
   text?: string;
 };
 
-export default function LoadingText({ text = 'Loading' }: LoadinTextProps) {
+export default function LoadingText({ text = 'Loading' }: Readonly<LoadinTextProps>) {
   const [dots, setDots] = useState(0);
 
   useEffect(() => {

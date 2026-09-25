@@ -4,7 +4,7 @@ import type { AppUser } from '../types/AppUser.ts';
 
 type NavigationProps = Pick<AppUser, 'user'>;
 
-export default function Navigation(props: NavigationProps) {
+export default function Navigation(props: Readonly<NavigationProps>) {
   return (
     <nav className={'w-full p-5 h-10 bg-gray-800 text-white border-y-2 border-sky-800'}>
       <ul className={'flex items-center justify-center h-full w-full'}>

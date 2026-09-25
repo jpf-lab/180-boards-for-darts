@@ -17,8 +17,8 @@ function App() {
       <main className={'flex-1 bg-gray-600 text-white p-5'}>
         <Routes>
           {navi.map((nav, i) => (
-            <Route element={nav.protected && <ProtectedRoute user={user} />}>
-              <Route path={nav.link} key={'route' + i} element={nav.component} />
+            <Route key={'route' + i} element={nav.protected && <ProtectedRoute user={user} />}>
+              <Route path={nav.link} element={nav.component} />
             </Route>
           ))}
         </Routes>
