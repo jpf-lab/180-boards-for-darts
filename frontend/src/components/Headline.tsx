@@ -15,8 +15,10 @@ const variantClasses: Record<HeadingTag, string> = {
   h6: 'text-lg font-medium',
 };
 
-export default function Headline({ variant = 'h1', className = '', children }: HeadlineProps) {
+export default function Headline({ variant = 'h2', ...props }: HeadlineProps) {
   const Tag = variant;
 
-  return <Tag className={`mb-5 ${variantClasses[variant]} ${className}`}>{children}</Tag>;
+  return (
+    <Tag className={`mb-5 ${variantClasses[variant]} ${props.className}`}>{props.children}</Tag>
+  );
 }
