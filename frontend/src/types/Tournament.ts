@@ -5,7 +5,7 @@ export type TournamentOverview = {
 export type TournamentItemResponse = {
   id?: string;
   name?: string;
-  date?: number;
+  datetime?: string;
   locationId?: string;
   participantIds?: string[];
   playfieldIds?: string[];

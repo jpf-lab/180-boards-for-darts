@@ -1,16 +1,21 @@
 import type { TournamentLocation } from '../types/Tournament.ts';
 import { generateGoogleMapsLink } from '../utils/locationHelper.ts';
-import LocationBlock from './LocationBlock.tsx';
+import LocationBlock, { type LocationBlockVariant } from './LocationBlock.tsx';
 
-type LocationLinkProps = TournamentLocation;
+type LocationLinkProps = TournamentLocation & {
+  variant?: LocationBlockVariant;
+};
 
-export default function LocationLink(props: LocationLinkProps) {
+export default function LocationLink(props: Readonly<LocationLinkProps>) {
   const location = props.city && props.street;
+
+  const linkString =
+    props.street + ' ' + (props.number || '') + ',' + (props.postalcode || '') + ' ' + props.city;
 
   return (
     <div>
       {location && (
-        <a href={generateGoogleMapsLink(location)} target={'_blank'}>
+        <a href={generateGoogleMapsLink(linkString)} target={'_blank'} className={'underline'}>
           <LocationBlock {...props} />
         </a>
       )}

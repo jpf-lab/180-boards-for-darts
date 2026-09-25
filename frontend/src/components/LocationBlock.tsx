@@ -1,17 +1,24 @@
 import type { TournamentLocation } from '../types/Tournament.ts';
 
-type LocationBlockProps = TournamentLocation;
+export type LocationBlockVariant = 'default' | 'name';
 
-export default function LocationBlock(props: LocationBlockProps) {
+type LocationBlockProps = TournamentLocation & {
+  variant?: LocationBlockVariant;
+};
+
+export default function LocationBlock(props: Readonly<LocationBlockProps>) {
   const locationAvailable = props.city && props.street;
+
+  const nameOnly = props.variant === 'name';
 
   return (
     <>
-      {props.name && <span>{props.name}</span>}
-      {props.owner && <span>{props.owner}</span>}
-      {props.contactPhone && <span>{props.contactPhone}</span>}
-      {props.contactMail && <span>{props.contactMail}</span>}
-      {locationAvailable && (
+      {props.name ? <span>{props.name}</span> : 'Name not found'}
+
+      {!nameOnly && props.owner && <span>{props.owner}</span>}
+      {!nameOnly && props.contactPhone && <span>{props.contactPhone}</span>}
+      {!nameOnly && props.contactMail && <span>{props.contactMail}</span>}
+      {!nameOnly && locationAvailable && (
         <>
           {props.street && (
             <span>
@@ -26,7 +33,7 @@ export default function LocationBlock(props: LocationBlockProps) {
             ))}
         </>
       )}
-      {!locationAvailable && (
+      {!nameOnly && !locationAvailable && (
         <>
           <span>No location data available</span>
         </>
