@@ -33,11 +33,7 @@ export default function LocationBlock(props: Readonly<LocationBlockProps>) {
             ))}
         </>
       )}
-      {!nameOnly && !locationAvailable && (
-        <>
-          <span>No location data available</span>
-        </>
-      )}
+      {!nameOnly && !locationAvailable && <span>No location data available</span>}
     </>
   );
 }
