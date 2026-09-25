@@ -12,6 +12,11 @@ export async function getTournaments(): Promise<TournamentItemResponse[]> {
   return response.data;
 }
 
+export async function getTournamentById(id: string): Promise<TournamentItemResponse> {
+  const response = await axiosClient.get<TournamentItemResponse>(`/tournaments/${id}`);
+  return response.data;
+}
+
 // Locations
 export async function getLocations(): Promise<TournamentLocation[]> {
   const response = await axiosClient.get<TournamentItemResponse[]>('/locations');
@@ -19,7 +24,7 @@ export async function getLocations(): Promise<TournamentLocation[]> {
 }
 
 export async function getLocationByID(id: string): Promise<TournamentLocation> {
-  const response = await axiosClient.get<TournamentLocation>('/locations/' + id);
+  const response = await axiosClient.get<TournamentLocation>(`/locations/${id}`);
   return response.data;
 }
 
@@ -30,7 +35,7 @@ export async function getParticipants(): Promise<TournamentParticipant[]> {
 }
 
 export async function getParticipantById(id: string): Promise<TournamentParticipant> {
-  const response = await axiosClient.get<TournamentParticipant>('/participants/' + id);
+  const response = await axiosClient.get<TournamentParticipant>(`/participants/${id}`);
   return response.data;
 }
 
@@ -41,6 +46,6 @@ export async function getPlayfields(): Promise<TournamentPlayfield[]> {
 }
 
 export async function getPlayfieldById(id: string): Promise<TournamentPlayfield> {
-  const response = await axiosClient.get<TournamentPlayfield>('/playfields/' + id);
+  const response = await axiosClient.get<TournamentPlayfield>(`/playfields/${id}`);
   return response.data;
 }
