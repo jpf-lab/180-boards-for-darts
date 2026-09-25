@@ -1,5 +1,4 @@
 import { Routes, Route } from 'react-router';
-import './css/App.css';
 import Navigation from './components/Navigation.tsx';
 import Header from './components/Header.tsx';
 import Footer from './components/Footer.tsx';
