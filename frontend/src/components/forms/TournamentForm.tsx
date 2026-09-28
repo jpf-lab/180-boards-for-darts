@@ -3,9 +3,8 @@ import type { SubmitEvent } from 'react';
 import FormField from './FormField';
 import CustomButton from '../CustomButton.tsx';
 
-const pageWrapperStyles = 'max-w-md my-10 px-4';
+const pageWrapperStyles = 'max-w-md my-10';
 const introTextStyles = 'text-sm mb-6';
-const requiredMarkStyles = 'text-red-600';
 const formStyles = 'flex flex-col gap-4';
 const fieldsetStyles = 'border border-gray-300 rounded-lg px-4 pt-3 pb-4 flex flex-col gap-4';
 const legendStyles = 'font-semibold text-sm px-2';
@@ -63,36 +62,35 @@ export default function TournamentForm() {
 
   return (
     <div className={`${pageWrapperStyles}`}>
-      <p className={`${introTextStyles}`}>
-        Fields marked <span className={`${requiredMarkStyles}`}>*</span> are required.
-      </p>
-
       <form onSubmit={handleSubmit} onReset={handleReset} className={`${formStyles}`}>
-        <FormField
-          key={`name-${resetCounter}`}
-          id="name"
-          label="Name"
-          type="text"
-          placeholder="e.g. Summer Dart Championship"
-          required
-          minLength={3}
-          maxLength={100}
-          errorMessage="Name must be between 3 and 100 characters."
-          value={values.name}
-          onChange={(v) => updateField('name', v)}
-        />
+        <fieldset className={`${fieldsetStyles}`}>
+          <legend className={`${legendStyles}`}>Tournament</legend>
+          <FormField
+            key={`name-${resetCounter}`}
+            id="name"
+            label="Name"
+            type="text"
+            placeholder="e.g. Summer Dart Championship"
+            required
+            minLength={3}
+            maxLength={100}
+            errorMessage="Name must be between 3 and 100 characters."
+            value={values.name}
+            onChange={(v) => updateField('name', v)}
+          />
 
-        <FormField
-          key={`datetime-${resetCounter}`}
-          id="datetime"
-          label="Date & Time"
-          type="datetime-local"
-          required
-          min={getMinDateTime()}
-          errorMessage="Please select a date and time in the future."
-          value={values.datetime}
-          onChange={(v) => updateField('datetime', v)}
-        />
+          <FormField
+            key={`datetime-${resetCounter}`}
+            id="datetime"
+            label="Date & Time"
+            type="datetime-local"
+            required
+            min={getMinDateTime()}
+            errorMessage="Please select a date and time in the future."
+            value={values.datetime}
+            onChange={(v) => updateField('datetime', v)}
+          />
+        </fieldset>
 
         <fieldset className={`${fieldsetStyles}`}>
           <legend className={`${legendStyles}`}>Location</legend>
@@ -180,9 +178,13 @@ export default function TournamentForm() {
         {/*  onChange={(v) => updateField('playfieldIds', v)}*/}
         {/*/>*/}
 
+        <p className={`${introTextStyles}`}>
+          <span>*</span> required
+        </p>
+
         <div className={`${actionsStyles}`}>
           <CustomButton type={'submit'}>Save</CustomButton>
-          <CustomButton type={'reset'} variant={'secondary'}>
+          <CustomButton type={'reset'} buttonstyle={'secondary'}>
             Reset
           </CustomButton>
         </div>
