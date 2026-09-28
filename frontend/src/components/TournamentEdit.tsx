@@ -29,7 +29,7 @@ export default function TournamentEdit() {
       }
       setLoading(false);
     }
-    load();
+    void load();
   }, [id]);
 
   return (
