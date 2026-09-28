@@ -6,6 +6,7 @@ import { getTournamentById } from '../api/tournaments.ts';
 import Headline from '../components/Headline';
 import Alert from '../components/Alert';
 import LoadingText from '../components/LoadingText';
+import TournamentForm from './forms/TournamentForm.tsx';
 
 export default function TournamentEdit() {
   const { id } = useParams<{ id: string }>();
@@ -47,7 +48,7 @@ export default function TournamentEdit() {
       {!loading && !error && tournament && (
         <div>
           <Headline variant="h1">{tournament.name}</Headline>
-          {/* Formularfelder zum Bearbeiten */}
+          <TournamentForm />
         </div>
       )}
     </>
