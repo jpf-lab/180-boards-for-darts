@@ -48,7 +48,7 @@ export default function TournamentEdit() {
       {!loading && !error && tournament && (
         <div>
           <Headline variant="h1">{tournament.name}</Headline>
-          <TournamentForm />
+          <TournamentForm variant={'edit'} tournamentId={tournament.id} />
         </div>
       )}
     </>
