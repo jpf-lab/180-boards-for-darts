@@ -25,7 +25,6 @@ export default function OAuth(props: Readonly<OAuthProps>) {
       axios
         .get<AppUserType>('api/auth/me')
         .then((r) => {
-          console.log('auth me');
           props.setUser({
             name: r.data.name ? r.data.name : undefined,
             role: r.data.role ? r.data.role : undefined,
