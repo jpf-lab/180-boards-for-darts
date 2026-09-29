@@ -36,7 +36,7 @@ export default function FormField({
 
   return (
     <div className={`flex flex-col gap-1`}>
-      <label htmlFor={id} className={`text-sm font-medium ${showError && 'text-red-600'}`}>
+      <label htmlFor={id} className={`text-sm font-medium ${showError && 'text-red-500'}`}>
         {label}
         {required && ' *'}
       </label>
@@ -51,7 +51,7 @@ export default function FormField({
         {...rest}
       />
       {showHint && (
-        <p id={`${id}-error`} className={`text-xs text-red-600`}>
+        <p id={`${id}-error`} className={`text-xs text-red-500`}>
           {errorMessage}
         </p>
       )}

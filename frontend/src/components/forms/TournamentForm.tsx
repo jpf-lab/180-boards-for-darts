@@ -57,7 +57,7 @@ export default function TournamentForm() {
   return (
     <div className={`max-w-md my-10`}>
       <form onSubmit={handleSubmit} onReset={handleReset}>
-        <div className={'flex flex-col gap-4'}>
+        <div className={'flex gap-4 mb-4'}>
           <Fieldset legend={'Tournament'}>
             <FormField
               key={`name-${resetCounter}`}
