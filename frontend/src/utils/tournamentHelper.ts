@@ -61,7 +61,8 @@ export async function getTournamentDetails(id: string): Promise<TournamentFormVa
         playfield && playfields.push(playfield);
       });
     }
-    const valueResponse: TournamentFormValues = {
+
+    return {
       name: tournament.name || '',
       datetime: tournament.datetime || '',
       location: location
@@ -79,7 +80,6 @@ export async function getTournamentDetails(id: string): Promise<TournamentFormVa
       participants: participants,
       playfields: playfields,
     };
-    return valueResponse;
   }
   return null;
 }
