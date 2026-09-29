@@ -41,7 +41,6 @@ function getMinDateTime(): string {
   return now.toISOString().slice(0, 16);
 }
 
-// TODO: durch echten API-Call ersetzen
 async function getTournamentValues(tournamentId: string): Promise<TournamentFormValues | null> {
   const tournamentDetails = await getTournamentDetails(tournamentId);
   if (tournamentDetails) {
