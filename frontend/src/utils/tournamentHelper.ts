@@ -65,18 +65,16 @@ export async function getTournamentDetails(id: string): Promise<TournamentFormVa
     return {
       name: tournament.name || '',
       datetime: tournament.datetime || '',
-      location: location
-        ? location
-        : {
-            id: tournament.locationId,
-            street: '',
-            number: '',
-            postalcode: '',
-            city: '',
-            owner: '',
-            contactMail: '',
-            contactPhone: '',
-          },
+      location: location ?? {
+        id: tournament.locationId,
+        street: '',
+        number: '',
+        postalcode: '',
+        city: '',
+        owner: '',
+        contactMail: '',
+        contactPhone: '',
+      },
       participants: participants,
       playfields: playfields,
     };

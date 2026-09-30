@@ -54,7 +54,7 @@ type TournamentFormProps = {
   tournamentId?: string;
 };
 
-export default function TournamentForm(props: TournamentFormProps) {
+export default function TournamentForm(props: Readonly<TournamentFormProps>) {
   const [values, setValues] = useState<TournamentFormValues>(initialValues);
   const [resetCounter, setResetCounter] = useState(0);
   const [loading, setLoading] = useState(props.variant !== 'create');
