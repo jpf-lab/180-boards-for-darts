@@ -49,17 +49,17 @@ export async function getTournamentDetails(id: string): Promise<TournamentFormVa
     }
     let participants: TournamentParticipant[] = [];
     if (tournament.participantIds && tournament.participantIds?.length > 0) {
-      tournament.participantIds.map(async (participantId) => {
-        const participant = await getParticipantById(participantId);
-        participant && participants.push(participant);
-      });
+      const participantsResults = await Promise.all(
+        tournament.participantIds.map((id) => getParticipantById(id))
+      );
+      participants.push(...participantsResults.filter(Boolean));
     }
     let playfields: TournamentPlayfield[] = [];
     if (tournament.playfieldIds && tournament.playfieldIds.length > 0) {
-      tournament.playfieldIds.map(async (playfieldId) => {
-        const playfield = await getPlayfieldById(playfieldId);
-        playfield && playfields.push(playfield);
-      });
+      const playfieldsResults = await Promise.all(
+        tournament.playfieldIds.map(async (playfieldId) => getPlayfieldById(playfieldId))
+      );
+      playfields.push(...playfieldsResults.filter(Boolean));
     }
 
     return {
