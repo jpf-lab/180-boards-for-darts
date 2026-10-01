@@ -11,6 +11,7 @@ import type {
   TournamentParticipant,
   TournamentPlayfield,
 } from '../../types/Tournament.ts';
+import { TrashIcon } from '@heroicons/react/20/solid';
 
 type TournamentFormVariant = 'create' | 'edit' | 'details';
 
@@ -34,6 +35,10 @@ const initialValues: TournamentFormValues = {
   participants: [],
   playfields: [],
 };
+
+const thClassname = 'p-2';
+const trBodyClassname = 'even:bg-gray-800 odd:bg-gray-700 border-t-2 border-sky-800';
+const tdClassname = 'p-2';
 
 function getMinDateTime(): string {
   const now = new Date();
@@ -232,6 +237,88 @@ export default function TournamentForm(props: Readonly<TournamentFormProps>) {
               value={values.location.city ? values.location.city : ''}
               onChange={(v) => updateLocationField('city', v)}
             />
+          </Fieldset>
+          <Fieldset legend={'Participants'} className={'h-full'}>
+            <div
+              className={
+                'border-2 border-sky-800 bg-gray-950 text-left rounded-t-2xl border-separate border-spacing-0'
+              }
+            >
+              <table className={'table-auto w-full'}>
+                <thead className={''}>
+                  <tr className={''}>
+                    <th className={`${thClassname}`}>ID</th>
+                    <th className={`${thClassname}`}>Firstname</th>
+                    <th className={`${thClassname}`}>Lastname</th>
+                    <th className={`${thClassname}`}></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {values.participants?.length ? (
+                    values.participants?.map((participant: TournamentParticipant, index) => (
+                      <tr key={'tournamentRow' + index} className={`${trBodyClassname}`}>
+                        <td className={`${tdClassname}`}>{participant.id}</td>
+                        <td className={`${tdClassname}`}>{participant.firstname}</td>
+                        <td className={`${tdClassname}`}>{participant.lastname}</td>
+                        <td className={`${tdClassname}`}>
+                          <div className={'flex items-center justify-center'}>
+                            <CustomButton buttonstyle={'red'} title={'Delete'}>
+                              <TrashIcon className={'size-3'} />
+                            </CustomButton>
+                          </div>
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr className={`${trBodyClassname}`}>
+                      <td className={`text-center ${tdClassname}`} colSpan={4}>
+                        No participants found
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </Fieldset>
+          <Fieldset legend={'Playfields'} className={'h-full'}>
+            <div
+              className={
+                'border-2 border-sky-800 bg-gray-950 text-left rounded-t-2xl border-separate border-spacing-0'
+              }
+            >
+              <table className={'table-auto w-full'}>
+                <thead className={''}>
+                  <tr className={''}>
+                    <th className={`${thClassname}`}>ID</th>
+                    <th className={`${thClassname}`}>Name</th>
+                    <th className={`${thClassname}`}></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {values.playfields?.length ? (
+                    values.playfields?.map((playfield: TournamentPlayfield, index) => (
+                      <tr key={'tournamentRow' + index} className={`${trBodyClassname}`}>
+                        <td className={`${tdClassname}`}>{playfield.id}</td>
+                        <td className={`${tdClassname}`}>{playfield.name}</td>
+                        <td className={`${tdClassname}`}>
+                          <div className={'flex items-center justify-center'}>
+                            <CustomButton buttonstyle={'red'} title={'Delete'}>
+                              <TrashIcon className={'size-3'} />
+                            </CustomButton>
+                          </div>
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr className={`${trBodyClassname}`}>
+                      <td className={`text-center ${tdClassname}`} colSpan={3}>
+                        No playfields found
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
           </Fieldset>
         </div>
 
