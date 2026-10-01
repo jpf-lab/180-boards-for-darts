@@ -38,10 +38,8 @@ export default function OAuth(props: Readonly<OAuthProps>) {
   }
 
   useEffect(() => {
-    if (!props.user?.name) {
-      loadUser();
-    }
-  });
+    loadUser();
+  }, []);
 
   return (
     <div>
