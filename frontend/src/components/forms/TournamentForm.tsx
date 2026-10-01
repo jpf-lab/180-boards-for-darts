@@ -143,9 +143,9 @@ export default function TournamentForm(props: Readonly<TournamentFormProps>) {
   }
 
   return (
-    <div className={`max-w-md my-10`}>
+    <div className={`my-10`}>
       <form onSubmit={handleSubmit} onReset={handleReset}>
-        <div className={'flex gap-4 mb-4'}>
+        <div className={'flex gap-4 mb-4 flex-wrap'}>
           <Fieldset legend={'Tournament'}>
             <FormField
               key={`name-${resetCounter}`}
@@ -238,10 +238,50 @@ export default function TournamentForm(props: Readonly<TournamentFormProps>) {
               onChange={(v) => updateLocationField('city', v)}
             />
           </Fieldset>
+          <Fieldset legend={'Playfields'} className={'h-full'}>
+            <div
+              className={
+                'border-2 border-sky-800 bg-gray-950 text-left rounded-t-2xl border-separate border-spacing-0 overflow-x-scroll'
+              }
+            >
+              <table className={'table-auto w-full'}>
+                <thead className={''}>
+                  <tr className={''}>
+                    <th className={`${thClassname}`}>ID</th>
+                    <th className={`${thClassname}`}>Name</th>
+                    <th className={`${thClassname}`}></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {values.playfields?.length ? (
+                    values.playfields?.map((playfield: TournamentPlayfield, index) => (
+                      <tr key={'tournamentRow' + index} className={`${trBodyClassname}`}>
+                        <td className={`${tdClassname}`}>{playfield.id}</td>
+                        <td className={`${tdClassname}`}>{playfield.name}</td>
+                        <td className={`${tdClassname}`}>
+                          <div className={'flex items-center justify-center'}>
+                            <CustomButton buttonstyle={'red'} title={'Delete'}>
+                              <TrashIcon className={'size-3'} />
+                            </CustomButton>
+                          </div>
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr className={`${trBodyClassname}`}>
+                      <td className={`text-center ${tdClassname}`} colSpan={3}>
+                        No playfields found
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </Fieldset>
           <Fieldset legend={'Participants'} className={'h-full'}>
             <div
               className={
-                'border-2 border-sky-800 bg-gray-950 text-left rounded-t-2xl border-separate border-spacing-0'
+                'border-2 border-sky-800 bg-gray-950 text-left rounded-t-2xl border-separate border-spacing-0 overflow-x-scroll'
               }
             >
               <table className={'table-auto w-full'}>
@@ -273,46 +313,6 @@ export default function TournamentForm(props: Readonly<TournamentFormProps>) {
                     <tr className={`${trBodyClassname}`}>
                       <td className={`text-center ${tdClassname}`} colSpan={4}>
                         No participants found
-                      </td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
-            </div>
-          </Fieldset>
-          <Fieldset legend={'Playfields'} className={'h-full'}>
-            <div
-              className={
-                'border-2 border-sky-800 bg-gray-950 text-left rounded-t-2xl border-separate border-spacing-0'
-              }
-            >
-              <table className={'table-auto w-full'}>
-                <thead className={''}>
-                  <tr className={''}>
-                    <th className={`${thClassname}`}>ID</th>
-                    <th className={`${thClassname}`}>Name</th>
-                    <th className={`${thClassname}`}></th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {values.playfields?.length ? (
-                    values.playfields?.map((playfield: TournamentPlayfield, index) => (
-                      <tr key={'tournamentRow' + index} className={`${trBodyClassname}`}>
-                        <td className={`${tdClassname}`}>{playfield.id}</td>
-                        <td className={`${tdClassname}`}>{playfield.name}</td>
-                        <td className={`${tdClassname}`}>
-                          <div className={'flex items-center justify-center'}>
-                            <CustomButton buttonstyle={'red'} title={'Delete'}>
-                              <TrashIcon className={'size-3'} />
-                            </CustomButton>
-                          </div>
-                        </td>
-                      </tr>
-                    ))
-                  ) : (
-                    <tr className={`${trBodyClassname}`}>
-                      <td className={`text-center ${tdClassname}`} colSpan={3}>
-                        No playfields found
                       </td>
                     </tr>
                   )}
