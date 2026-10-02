@@ -12,7 +12,7 @@ export default function Navigation(props: Readonly<NavigationProps>) {
           if (!nav.protected || (nav.protected && props.user?.name)) {
             return (
               <li key={'navilink' + i}>
-                <NavLink to={nav.link} className={'m-5 hover:underline'}>
+                <NavLink to={nav.path} className={'m-5 hover:underline'}>
                   {nav.name}
                 </NavLink>
               </li>

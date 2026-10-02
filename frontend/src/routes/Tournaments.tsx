@@ -38,7 +38,7 @@ export default function Tournaments() {
   const tdClassname = 'p-2';
 
   useEffect(() => {
-    loadTournaments();
+    void loadTournaments();
   }, []);
 
   return (
@@ -55,8 +55,12 @@ export default function Tournaments() {
         </div>
       )}
       {!error && !loading && (
-        <div className={'border-2 border-sky-800 bg-gray-950 rounded-2xl text-left'}>
-          <table className={'w-full table-auto'}>
+        <div
+          className={
+            'w-full overflow-x-scroll border-2 border-sky-800 bg-gray-950 text-left rounded-t-2xl border-separate border-spacing-0'
+          }
+        >
+          <table className={'table-auto w-full'}>
             <thead className={''}>
               <tr className={''}>
                 <th className={`${thClassname}`}>Name</th>
@@ -88,14 +92,18 @@ export default function Tournaments() {
                       {tournament.playfieldIds?.length || 'Not found'}
                     </td>
                     <td className={`${tdClassname}`}>
-                      <CustomButton>
-                        <PencilIcon className={'size-3'} title={'Edit'} />
-                      </CustomButton>
+                      <div className={'flex items-center justify-center'}>
+                        <CustomButton>
+                          <PencilIcon className={'size-3'} title={'Edit'} />
+                        </CustomButton>
+                      </div>
                     </td>
                     <td className={`${tdClassname}`}>
-                      <CustomButton buttonstyle={'red'} title={'Delete'}>
-                        <TrashIcon className={'size-3'} />
-                      </CustomButton>
+                      <div className={'flex items-center justify-center'}>
+                        <CustomButton buttonstyle={'red'} title={'Delete'}>
+                          <TrashIcon className={'size-3'} />
+                        </CustomButton>
+                      </div>
                     </td>
                   </tr>
                 ))
