@@ -93,7 +93,7 @@ export default function Tournaments() {
                       </CustomButton>
                     </td>
                     <td className={`${tdClassname}`}>
-                      <CustomButton variant={'red'} title={'Delete'}>
+                      <CustomButton buttonstyle={'red'} title={'Delete'}>
                         <TrashIcon className={'size-3'} />
                       </CustomButton>
                     </td>
