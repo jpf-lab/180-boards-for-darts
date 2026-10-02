@@ -4,7 +4,7 @@ import Header from './components/Header.tsx';
 import Footer from './components/Footer.tsx';
 import { useState } from 'react';
 import type { AppUserType } from './types/AppUser.ts';
-import { navi } from './main.tsx';
+import { customRoutes, navi } from './main.tsx';
 import ProtectedRoute from './components/ProtectedRoute.tsx';
 
 function App() {
@@ -18,7 +18,15 @@ function App() {
         <Routes>
           {navi.map((nav, i) => (
             <Route key={'route' + i} element={nav.protected && <ProtectedRoute user={user} />}>
-              <Route path={nav.link} element={nav.component} />
+              <Route path={nav.path} element={nav.component} />
+            </Route>
+          ))}
+          {customRoutes.map((nav, i) => (
+            <Route
+              key={'customRoute' + i}
+              element={nav.protected && <ProtectedRoute user={user} />}
+            >
+              <Route path={nav.path} element={nav.component} />
             </Route>
           ))}
         </Routes>

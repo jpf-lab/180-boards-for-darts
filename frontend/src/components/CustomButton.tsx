@@ -1,24 +1,65 @@
-import type { ButtonHTMLAttributes } from 'react';
+import type { AnchorHTMLAttributes, ButtonHTMLAttributes } from 'react';
+import { Link, type LinkProps } from 'react-router-dom';
 
-type CustomButtonVariant = 'primary' | 'secondary' | 'green' | 'red';
+type CustomButtonStyle = 'primary' | 'secondary' | 'green' | 'red';
 
-const variantColor: Record<CustomButtonVariant, string> = {
+const buttonBaseStyle = 'inline-block hover:cursor-pointer px-5 py-2 text-white rounded-2xl';
+
+const variantColor: Record<CustomButtonStyle, string> = {
   primary: 'bg-sky-800 hover:bg-sky-400',
   secondary: 'bg-sky-400 hover:bg-sky-800 ',
   green: 'bg-green-600 hover:bg-green-700',
   red: 'bg-red-600 hover:bg-red-700',
 };
 
-type CustomButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
-  variant?: CustomButtonVariant;
+type ButtonVariantProps = ButtonHTMLAttributes<HTMLButtonElement> & {
+  variant?: 'button';
+  buttonstyle?: CustomButtonStyle;
 };
 
-export default function CustomButton({ variant = 'primary', ...props }: CustomButtonProps) {
+type AnchorVariantProps = AnchorHTMLAttributes<HTMLAnchorElement> &
+  LinkProps & {
+    variant?: 'anchor';
+    buttonstyle?: CustomButtonStyle;
+  };
+
+type LinkVariantProps = AnchorHTMLAttributes<HTMLAnchorElement> &
+  LinkProps & {
+    variant?: 'link';
+    buttonstyle?: CustomButtonStyle;
+  };
+
+type CustomButtonProps = ButtonVariantProps | AnchorVariantProps | LinkVariantProps;
+
+export default function CustomButton(props: CustomButtonProps) {
+  const variant = props.variant || 'button';
+  const buttonStyle = props.buttonstyle || 'primary';
+
+  const elementStyle = `${buttonBaseStyle} ${variantColor[buttonStyle]}`;
+
   return (
-    <button
-      className={`hover:cursor-pointer px-5 py-2 text-white rounded-2xl ${variantColor[variant]}`}
-      title={props.title}
-      {...props}
-    />
+    <>
+      {variant === 'button' && (
+        <button
+          {...(props as ButtonVariantProps)}
+          className={`${elementStyle} ${props.className ?? ''}`}
+          title={props.title}
+        />
+      )}
+      {variant === 'anchor' && (
+        <a
+          {...(props as AnchorVariantProps)}
+          className={`${elementStyle} ${props.className ?? ''}`}
+          title={props.title}
+        />
+      )}
+      {variant === 'link' && (
+        <Link
+          {...(props as LinkVariantProps)}
+          className={`${elementStyle} ${props.className ?? ''}`}
+          title={props.title}
+        />
+      )}
+    </>
   );
 }
