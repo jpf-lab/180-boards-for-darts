@@ -1,17 +1,52 @@
 import { PencilIcon } from '@heroicons/react/24/solid';
 import CustomButton from '../components/CustomButton.tsx';
-import { useEffect, useState } from 'react';
-import type { TournamentOverview, TournamentOverviewItem } from '../types/Tournament.ts';
+import { type ReactNode, useEffect, useState } from 'react';
+import type { TournamentOverviewItem } from '../types/Tournament.ts';
 import { TrashIcon } from '@heroicons/react/20/solid';
 import Headline from '../components/Headline.tsx';
 import Alert from '../components/Alert.tsx';
 import LoadingText from '../components/LoadingText.tsx';
 import { getTournamentOverview } from '../utils/tournamentHelper.ts';
 import LocationLink from '../components/LocationLink.tsx';
+import TableOverview, {
+  generateNewTableOverview,
+  type TableOverviewProps,
+} from '../components/tables/TableOverview.tsx';
+
+function toRows(items?: TournamentOverviewItem[]): ReactNode[][] | [] {
+  return items
+    ? items.map((tournament) => [
+        tournament.name,
+        tournament.datetime ? new Date(tournament.datetime).toLocaleString() : 'Not found',
+        <LocationLink variant={'name'} {...tournament.location} />,
+        tournament.participantIds?.length || 'Not found',
+        tournament.playfieldIds?.length || 'Not found',
+      ])
+    : [];
+}
 
 export default function Tournaments() {
-  const [tournaments, setTournaments] = useState<TournamentOverview>({
-    tournaments: [],
+  const [tableOverview, setTableOverview] = useState<TableOverviewProps>({
+    table: {
+      header: {
+        titles: ['Name', 'Date', 'Location', 'Participants', 'Playfields'],
+      },
+      body: {
+        data: [],
+        buttons: [
+          <div className={'flex items-center justify-center'}>
+            <CustomButton>
+              <PencilIcon className={'size-3'} title={'Edit'} />
+            </CustomButton>
+          </div>,
+          <div className={'flex items-center justify-center'}>
+            <CustomButton buttonstyle={'red'} title={'Delete'}>
+              <TrashIcon className={'size-3'} />
+            </CustomButton>
+          </div>,
+        ],
+      },
+    },
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -28,14 +63,10 @@ export default function Tournaments() {
       return;
     }
 
-    setTournaments(tournaments);
+    setTableOverview(generateNewTableOverview(tableOverview, toRows(tournaments)));
 
     setLoading(false);
   }
-
-  const thClassname = 'p-2';
-  const trBodyClassname = 'even:bg-gray-800 odd:bg-gray-700 border-t-2 border-sky-800';
-  const tdClassname = 'p-2';
 
   useEffect(() => {
     void loadTournaments();
@@ -54,70 +85,7 @@ export default function Tournaments() {
           <LoadingText />
         </div>
       )}
-      {!error && !loading && (
-        <div
-          className={
-            'w-full overflow-x-scroll border-2 border-sky-800 bg-gray-950 text-left rounded-t-2xl border-separate border-spacing-0'
-          }
-        >
-          <table className={'table-auto w-full'}>
-            <thead className={''}>
-              <tr className={''}>
-                <th className={`${thClassname}`}>Name</th>
-                <th className={`${thClassname}`}>Date</th>
-                <th className={`${thClassname}`}>Location</th>
-                <th className={`${thClassname}`}>Participants</th>
-                <th className={`${thClassname}`}>Playfields</th>
-                <th className={`${thClassname}`}></th>
-                <th className={`${thClassname}`}></th>
-              </tr>
-            </thead>
-            <tbody>
-              {tournaments.tournaments?.length ? (
-                tournaments.tournaments?.map((tournament: TournamentOverviewItem, index) => (
-                  <tr key={'tournamentRow' + index} className={`${trBodyClassname}`}>
-                    <td className={`${tdClassname}`}>{tournament.name}</td>
-                    <td className={`${tdClassname}`}>
-                      {tournament.datetime
-                        ? new Date(tournament.datetime).toLocaleString()
-                        : 'Not found'}
-                    </td>
-                    <td className={`${tdClassname}`}>
-                      <LocationLink variant={'name'} {...tournament.location} />
-                    </td>
-                    <td className={`${tdClassname}`}>
-                      {tournament.participantIds?.length || 'Not found'}
-                    </td>
-                    <td className={`${tdClassname}`}>
-                      {tournament.playfieldIds?.length || 'Not found'}
-                    </td>
-                    <td className={`${tdClassname}`}>
-                      <div className={'flex items-center justify-center'}>
-                        <CustomButton>
-                          <PencilIcon className={'size-3'} title={'Edit'} />
-                        </CustomButton>
-                      </div>
-                    </td>
-                    <td className={`${tdClassname}`}>
-                      <div className={'flex items-center justify-center'}>
-                        <CustomButton buttonstyle={'red'} title={'Delete'}>
-                          <TrashIcon className={'size-3'} />
-                        </CustomButton>
-                      </div>
-                    </td>
-                  </tr>
-                ))
-              ) : (
-                <tr className={`${trBodyClassname}`}>
-                  <td className={`text-center ${tdClassname}`} colSpan={7}>
-                    No tournaments found
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
-      )}
+      {!error && !loading && <TableOverview {...tableOverview} />}
     </>
   );
 }
