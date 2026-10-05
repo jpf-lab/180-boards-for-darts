@@ -9,6 +9,8 @@ import TableOverview, {
   type TableOverviewProps,
 } from '../components/tables/TableOverview.tsx';
 import { getLocationOverview } from '../utils/locationHelper.ts';
+import { SquaresPlusIcon } from '@heroicons/react/24/solid';
+import CustomButton from '../components/CustomButton.tsx';
 
 function toRows(items?: TournamentLocation[]): ReactNode[][] | [] {
   return items
@@ -25,7 +27,7 @@ function toRows(items?: TournamentLocation[]): ReactNode[][] | [] {
     : [];
 }
 
-export default function Locations() {
+export default function LocationOverview() {
   const [tableOverview, setTableOverview] = useState<TableOverviewProps>(
     getTableOverviewDefault([
       'Name',
@@ -75,7 +77,20 @@ export default function Locations() {
           <LoadingText />
         </div>
       )}
-      {!error && !loading && <TableOverview {...tableOverview} />}
+      {!error && !loading && (
+        <>
+          <CustomButton
+            variant={'link'}
+            to={'/locations/new'}
+            buttonstyle={'green'}
+            className={'mb-4'}
+          >
+            <SquaresPlusIcon className={'size-6 inline-block mr-2'} />
+            <span>Create New Location</span>
+          </CustomButton>
+          <TableOverview {...tableOverview} />
+        </>
+      )}
     </>
   );
 }
