@@ -1,4 +1,4 @@
-import type { TournamentLocation, TournamentLocationOverview } from '../types/Tournament.ts';
+import type { TournamentLocationOverview } from '../types/Tournament.ts';
 import { getLocations } from '../api/tournaments.ts';
 
 export function generateGoogleMapsLink(address: string): string {
@@ -7,9 +7,7 @@ export function generateGoogleMapsLink(address: string): string {
 
 export async function getLocationOverview(): Promise<TournamentLocationOverview | undefined> {
   try {
-    const locationsResponse: TournamentLocation[] = await getLocations();
-
-    return await Promise.all(locationsResponse);
+    return await getLocations();
   } catch (err) {
     console.error(err);
     return undefined;

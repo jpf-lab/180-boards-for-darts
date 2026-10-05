@@ -29,12 +29,12 @@ type OverviewButtonProps = {
 
 export function getButtonsDefault(props: OverviewButtonProps) {
   return [
-    <div className={'flex items-center justify-center'}>
+    <div key={'overview-edit'} className={'flex items-center justify-center'}>
       <CustomButton {...(props.edit as CustomButtonProps)}>
         <PencilIcon className={'size-3'} title={'Edit'} />
       </CustomButton>
     </div>,
-    <div className={'flex items-center justify-center'}>
+    <div key={'overview-delete'} className={'flex items-center justify-center'}>
       <CustomButton {...(props.delete as CustomButtonProps)} buttonstyle={'red'} title={'Delete'}>
         <TrashIcon className={'size-3'} />
       </CustomButton>
@@ -72,7 +72,7 @@ export function generateNewTableOverview(
   };
 }
 
-export default function TableOverview(props: TableOverviewProps) {
+export default function TableOverview(props: Readonly<TableOverviewProps>) {
   return (
     <div className={'border-2 border-sky-800 bg-gray-950 text-left rounded-t-2xl overflow-x-auto'}>
       <table className={'table-auto w-full'}>
