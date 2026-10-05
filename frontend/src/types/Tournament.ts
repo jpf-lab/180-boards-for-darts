@@ -1,6 +1,4 @@
-export type TournamentOverview = {
-  tournaments?: TournamentOverviewItem[];
-};
+export type TournamentOverview = TournamentOverviewItem[] | undefined;
 
 export type TournamentItemResponse = {
   id?: string;
@@ -15,6 +13,8 @@ export type TournamentOverviewItem = TournamentItemResponse & {
   location?: TournamentLocation;
 };
 
+export type TournamentLocationOverview = TournamentLocation[];
+
 export type TournamentLocation = {
   id?: string;
   name?: string;
@@ -27,11 +27,15 @@ export type TournamentLocation = {
   contactMail?: string;
 };
 
+export type TournamentParticipantOverview = TournamentParticipant[];
+
 export type TournamentParticipant = {
   id?: string;
   lastname?: string;
   firstname?: string;
 };
+
+export type TournamentPlayfieldOverview = TournamentPlayfield[];
 
 export type TournamentPlayfield = {
   id?: string;

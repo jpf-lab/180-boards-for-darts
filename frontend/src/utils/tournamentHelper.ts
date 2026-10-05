@@ -10,7 +10,7 @@ export async function getTournamentOverview(): Promise<TournamentOverview | unde
   try {
     const tournamentsItemResponse: TournamentItemResponse[] = await getTournaments();
 
-    const tournamentsWithLocation: TournamentOverviewItem[] = await Promise.all(
+    return await Promise.all(
       tournamentsItemResponse.map(
         async (tournament: TournamentItemResponse): Promise<TournamentOverviewItem> => {
           if (tournament.locationId) {
@@ -23,7 +23,6 @@ export async function getTournamentOverview(): Promise<TournamentOverview | unde
         }
       )
     );
-    return { tournaments: tournamentsWithLocation };
   } catch (err) {
     console.error(err);
     return undefined;

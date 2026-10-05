@@ -29,7 +29,7 @@ type LinkVariantProps = AnchorHTMLAttributes<HTMLAnchorElement> &
     buttonstyle?: CustomButtonStyle;
   };
 
-type CustomButtonProps = ButtonVariantProps | AnchorVariantProps | LinkVariantProps;
+export type CustomButtonProps = ButtonVariantProps | AnchorVariantProps | LinkVariantProps;
 
 export default function CustomButton(props: CustomButtonProps) {
   const variant = props.variant || 'button';
