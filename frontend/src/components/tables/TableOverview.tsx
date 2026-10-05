@@ -1,13 +1,17 @@
 import TableRow from './TableRow.tsx';
-import TableColumn from './TableColumn.tsx';
+import TableCell from './TableCell.tsx';
 import type { ReactNode } from 'react';
+import CustomButton, { type CustomButtonProps } from '../CustomButton.tsx';
+import { PencilIcon, TrashIcon } from '@heroicons/react/24/solid';
 
 export type TableOverviewBodyData = (ReactNode | undefined)[][];
+
+export type TableOverviewTitles = string[];
 
 export type TableOverviewProps = {
   table: {
     header: {
-      titles: string[];
+      titles: TableOverviewTitles;
     };
     body: {
       data?: TableOverviewBodyData;
@@ -15,6 +19,42 @@ export type TableOverviewProps = {
     };
   };
 };
+
+type OmittedCustomButtonProps = Omit<CustomButtonProps, 'buttonstyle' | 'title'>;
+
+type OverviewButtonProps = {
+  edit?: OmittedCustomButtonProps;
+  delete?: OmittedCustomButtonProps;
+};
+
+export function getButtonsDefault(props: OverviewButtonProps) {
+  return [
+    <div className={'flex items-center justify-center'}>
+      <CustomButton {...(props.edit as CustomButtonProps)}>
+        <PencilIcon className={'size-3'} title={'Edit'} />
+      </CustomButton>
+    </div>,
+    <div className={'flex items-center justify-center'}>
+      <CustomButton {...(props.delete as CustomButtonProps)} buttonstyle={'red'} title={'Delete'}>
+        <TrashIcon className={'size-3'} />
+      </CustomButton>
+    </div>,
+  ];
+}
+
+export function getTableOverviewDefault(props: TableOverviewTitles) {
+  return {
+    table: {
+      header: {
+        titles: props.map((title) => title),
+      },
+      body: {
+        data: [],
+        buttons: getButtonsDefault({}),
+      },
+    },
+  };
+}
 
 export function generateNewTableOverview(
   prevData: TableOverviewProps,
@@ -39,12 +79,12 @@ export default function TableOverview(props: TableOverviewProps) {
         <thead>
           <TableRow variant={'head'}>
             {props.table.header.titles.map((title, index) => (
-              <TableColumn as={'th'} key={'title' + index}>
+              <TableCell as={'th'} key={'title' + index}>
                 {title}
-              </TableColumn>
+              </TableCell>
             ))}
             {props.table.body.buttons?.length && (
-              <TableColumn colSpan={props.table.body.buttons?.length} />
+              <TableCell colSpan={props.table.body.buttons?.length} />
             )}
           </TableRow>
         </thead>
@@ -54,26 +94,26 @@ export default function TableOverview(props: TableOverviewProps) {
               {props.table.body.data.map((item, rowIndex) => (
                 <TableRow key={'tableRow' + rowIndex}>
                   {item.map((cell, cellIndex) => (
-                    <TableColumn key={'dataCell-' + rowIndex + '-' + cellIndex}>
+                    <TableCell key={'dataCell-' + rowIndex + '-' + cellIndex}>
                       {cell ?? '-'}
-                    </TableColumn>
+                    </TableCell>
                   ))}
                   {props.table.body.buttons?.map((item, buttonIndex) => (
-                    <TableColumn key={'button-' + rowIndex + '-' + buttonIndex}>
+                    <TableCell key={'button-' + rowIndex + '-' + buttonIndex}>
                       {item ?? '-'}
-                    </TableColumn>
+                    </TableCell>
                   ))}
                 </TableRow>
               ))}
             </>
           ) : (
             <TableRow>
-              <TableColumn
+              <TableCell
                 className={'text-center'}
                 colSpan={props.table.header.titles.length + (props.table.body.buttons?.length ?? 0)}
               >
                 No results
-              </TableColumn>
+              </TableCell>
             </TableRow>
           )}
         </tbody>
