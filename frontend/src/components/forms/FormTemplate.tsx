@@ -16,7 +16,7 @@ type FormCreateProps<T extends Record<string, string | undefined>> = {
   columns?: number;
 };
 
-export default function FormCreate<T extends Record<string, string | undefined>>(
+export default function FormTemplate<T extends Record<string, string | undefined>>(
   props: Readonly<FormCreateProps<T>>
 ) {
   const { legend, fields, initialValues, onSubmit } = props;

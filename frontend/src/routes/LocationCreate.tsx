@@ -1,4 +1,4 @@
-import FormCreate, { type FormFieldConfig } from '../components/forms/FormCreate.tsx';
+import FormTemplate, { type FormFieldConfig } from '../components/forms/FormTemplate.tsx';
 import type { TournamentLocation } from '../types/Tournament.ts';
 import Headline from '../components/Headline.tsx';
 
@@ -108,7 +108,7 @@ export default function LocationCreate() {
   return (
     <>
       <Headline variant={'h2'}>Create Location</Headline>
-      <FormCreate<TournamentLocation>
+      <FormTemplate<TournamentLocation>
         legend={'Location'}
         fields={locationFields}
         initialValues={initialValues}
