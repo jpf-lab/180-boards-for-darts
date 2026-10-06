@@ -40,7 +40,7 @@ const locationFields: FormFieldConfig<TournamentLocation>[] = [
     label: 'Contact Phone',
     type: 'tel',
     placeholder: 'e.g. +49 30 123456',
-    pattern: '[0-9+\\(\\)\\/\\s\\-]{5,}',
+    pattern: String.raw`[0-9+\(\)\/\s\-]{5,}`,
     title: 'Digits, spaces and + ( ) / - allowed',
     errorMessage: 'Please enter a valid phone number.',
   },
@@ -60,7 +60,7 @@ const locationFields: FormFieldConfig<TournamentLocation>[] = [
     placeholder: 'e.g. Main Street',
     required: true,
     minLength: 2,
-    pattern: '^(?!\\d+$).+',
+    pattern: String.raw`^(?!\d+$).+`,
     errorMessage: 'Street must be at least 2 characters and not only numbers.',
   },
   {
@@ -82,7 +82,7 @@ const locationFields: FormFieldConfig<TournamentLocation>[] = [
     placeholder: 'e.g. Berlin',
     required: true,
     minLength: 2,
-    pattern: '^(?!\\d+$).+',
+    pattern: String.raw`^(?!\d+$).+`,
     errorMessage: 'City must be at least 2 characters and not only numbers.',
   },
   {
