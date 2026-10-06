@@ -28,6 +28,23 @@ export async function getLocationByID(id: string): Promise<TournamentLocation> {
   return response.data;
 }
 
+export async function createLocation(location: TournamentLocation): Promise<TournamentLocation> {
+  const response = await axiosClient.post<TournamentLocation>('/locations', location);
+  return response.data;
+}
+
+export async function updateLocation(
+  id: string,
+  location: TournamentLocation
+): Promise<TournamentLocation> {
+  const response = await axiosClient.put<TournamentLocation>(`/locations/${id}`, location);
+  return response.data;
+}
+
+export async function deleteLocation(id: string): Promise<void> {
+  await axiosClient.delete(`/locations/${id}`);
+}
+
 // Participants
 export async function getParticipants(): Promise<TournamentParticipant[]> {
   const response = await axiosClient.get<TournamentParticipant[]>('/participants');
