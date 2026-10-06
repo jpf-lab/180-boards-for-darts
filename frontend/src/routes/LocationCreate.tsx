@@ -1,6 +1,7 @@
 import FormTemplate, { type FormFieldConfig } from '../components/forms/FormTemplate.tsx';
 import type { TournamentLocation } from '../types/Tournament.ts';
 import Headline from '../components/Headline.tsx';
+import { createLocation } from '../api/tournaments.ts';
 
 const initialValues: TournamentLocation = {
   name: '',
@@ -23,7 +24,7 @@ const locationFields: FormFieldConfig<TournamentLocation>[] = [
     required: true,
     minLength: 2,
     maxLength: 100,
-    errorMessage: 'Location name must be between 2 and 100 characters.',
+    errormessage: 'Location name must be between 2 and 100 characters.',
   },
   {
     field: 'owner',
@@ -32,7 +33,7 @@ const locationFields: FormFieldConfig<TournamentLocation>[] = [
     type: 'text',
     placeholder: 'e.g. Max Mustermann',
     maxLength: 100,
-    errorMessage: 'Owner must be at most 100 characters.',
+    errormessage: 'Owner must be at most 100 characters.',
   },
   {
     field: 'contactPhone',
@@ -42,7 +43,7 @@ const locationFields: FormFieldConfig<TournamentLocation>[] = [
     placeholder: 'e.g. +49 30 123456',
     pattern: String.raw`[0-9+\(\)\/\s\-]{5,}`,
     title: 'Digits, spaces and + ( ) / - allowed',
-    errorMessage: 'Please enter a valid phone number.',
+    errormessage: 'Please enter a valid phone number.',
   },
   {
     field: 'contactMail',
@@ -50,7 +51,7 @@ const locationFields: FormFieldConfig<TournamentLocation>[] = [
     label: 'Contact Mail',
     type: 'email',
     placeholder: 'e.g. info@example.com',
-    errorMessage: 'Please enter a valid email address.',
+    errormessage: 'Please enter a valid email address.',
   },
   {
     field: 'street',
@@ -61,7 +62,7 @@ const locationFields: FormFieldConfig<TournamentLocation>[] = [
     required: true,
     minLength: 2,
     pattern: String.raw`^(?!\d+$).+`,
-    errorMessage: 'Street must be at least 2 characters and not only numbers.',
+    errormessage: 'Street must be at least 2 characters and not only numbers.',
   },
   {
     field: 'number',
@@ -72,7 +73,7 @@ const locationFields: FormFieldConfig<TournamentLocation>[] = [
     required: true,
     pattern: '^[0-9]+[a-zA-Z]?$',
     title: 'Digits, optionally followed by one letter',
-    errorMessage: 'Use digits, optionally followed by one letter (e.g. 12 or 12a).',
+    errormessage: 'Use digits, optionally followed by one letter (e.g. 12 or 12a).',
   },
   {
     field: 'city',
@@ -83,7 +84,7 @@ const locationFields: FormFieldConfig<TournamentLocation>[] = [
     required: true,
     minLength: 2,
     pattern: String.raw`^(?!\d+$).+`,
-    errorMessage: 'City must be at least 2 characters and not only numbers.',
+    errormessage: 'City must be at least 2 characters and not only numbers.',
   },
   {
     field: 'postalcode',
@@ -96,13 +97,13 @@ const locationFields: FormFieldConfig<TournamentLocation>[] = [
     maxLength: 5,
     inputMode: 'numeric',
     title: 'German postal code: exactly 5 digits',
-    errorMessage: 'Must be exactly 5 digits.',
+    errormessage: 'Must be exactly 5 digits.',
   },
 ];
 
 export default function LocationCreate() {
-  function onSubmit() {
-    console.log('onSubmit');
+  async function handleSubmit(values: TournamentLocation) {
+    await createLocation(values);
   }
 
   return (
@@ -112,7 +113,7 @@ export default function LocationCreate() {
         legend={'Location'}
         fields={locationFields}
         initialValues={initialValues}
-        onSubmit={onSubmit}
+        onSubmit={handleSubmit}
         columns={2}
       />
     </>

@@ -6,11 +6,11 @@ type FormFieldProps = {
   label: string;
   value: string;
   onChange: (value: string) => void;
-  errorMessage?: string;
+  errormessage?: string;
 } & Omit<InputHTMLAttributes<HTMLInputElement>, 'id' | 'value' | 'onChange'>;
 
 export default function FormField(props: FormFieldProps) {
-  const errorMessage = props.errorMessage ?? 'This field is invalid.';
+  const errorMessage = props.errormessage ?? 'This field is invalid.';
 
   const inputRef = useRef<HTMLInputElement>(null);
   const [touched, setTouched] = useState(false);
