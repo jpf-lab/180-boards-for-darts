@@ -1,4 +1,4 @@
-import { type ComponentProps, type SubmitEvent, useState } from 'react';
+import { type ComponentProps, type SubmitEvent, useRef, useState } from 'react';
 import Fieldset from './Fieldset.tsx';
 import FormField from './FormField.tsx';
 import CustomButton from '../CustomButton.tsx';
@@ -9,7 +9,7 @@ export type FormFieldConfig<T> = Omit<ComponentProps<typeof FormField>, 'value' 
   field: keyof T & string;
 };
 
-type FormCreateProps<T extends Record<string, string | undefined>> = {
+type FormTemplateProps<T extends Record<string, string | undefined>> = {
   legend: string;
   fields: FormFieldConfig<T>[];
   initialValues: T;
@@ -18,10 +18,12 @@ type FormCreateProps<T extends Record<string, string | undefined>> = {
   columns?: number;
   /** Message shown after a successful submit */
   successMessage?: string;
+  /** Reset the fields after a successful submit, default true */
+  resetOnSuccess?: boolean;
 };
 
 export default function FormTemplate<T extends Record<string, string | undefined>>(
-  props: Readonly<FormCreateProps<T>>
+  props: Readonly<FormTemplateProps<T>>
 ) {
   const { legend, fields, initialValues, onSubmit } = props;
 
@@ -29,7 +31,8 @@ export default function FormTemplate<T extends Record<string, string | undefined
   const [resetCounter, setResetCounter] = useState(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState(false);
+  const [success, setSuccess] = useState<string | null>(null);
+  const busyRef = useRef(false);
 
   const columnCount = Math.max(1, props.columns ?? 1);
   const perColumn = Math.ceil(fields.length / columnCount);
@@ -43,27 +46,29 @@ export default function FormTemplate<T extends Record<string, string | undefined
   }
 
   function handleReset() {
-    if (loading) return;
+    if (busyRef.current) return;
     resetForm();
     setError(null);
-    setSuccess(false);
+    setSuccess(null);
   }
 
   async function handleSubmit(event: SubmitEvent) {
     event.preventDefault();
-    if (loading) return;
+    if (busyRef.current) return; // Mehrfachabsendung verhindern
 
+    busyRef.current = true;
     setLoading(true);
     setError(null);
-    setSuccess(false);
+    setSuccess(null);
 
     try {
       await onSubmit(values);
-      resetForm();
-      setSuccess(true);
+      if (props.resetOnSuccess ?? true) resetForm();
+      setSuccess(props.successMessage ?? 'Saved successfully.');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Something went wrong.');
     } finally {
+      busyRef.current = false;
       setLoading(false);
     }
   }
@@ -75,9 +80,15 @@ export default function FormTemplate<T extends Record<string, string | undefined
   return (
     <>
       {loading && <LoadingText />}
-      {error && <Alert variant={'error'}>{error}</Alert>}
+      {error && (
+        <Alert variant={'error'} onClose={() => setError(null)}>
+          {error}
+        </Alert>
+      )}
       {success && (
-        <Alert variant={'success'}>{props.successMessage ?? 'Saved successfully.'}</Alert>
+        <Alert variant={'success'} onClose={() => setSuccess(null)}>
+          {success}
+        </Alert>
       )}
 
       <form onSubmit={handleSubmit} onReset={handleReset}>

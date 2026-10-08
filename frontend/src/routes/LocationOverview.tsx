@@ -5,14 +5,15 @@ import Alert from '../components/Alert.tsx';
 import LoadingText from '../components/LoadingText.tsx';
 import TableOverview, {
   generateNewTableOverview,
+  getButtonsDefault,
   getTableOverviewDefault,
   type TableOverviewProps,
 } from '../components/tables/TableOverview.tsx';
-import { getLocationOverview } from '../utils/locationHelper.ts';
+import { deleteLocationById, getLocationOverview } from '../utils/locationHelper.ts';
 import { SquaresPlusIcon } from '@heroicons/react/24/solid';
 import CustomButton from '../components/CustomButton.tsx';
 
-function toRows(items?: TournamentLocation[]): ReactNode[][] | [] {
+function toRows(items?: TournamentLocation[]): ReactNode[][] {
   return items
     ? items.map((item) => [
         item.name || 'Not found',
@@ -33,31 +34,47 @@ export default function LocationOverview() {
       'Name',
       'Street',
       'Number',
-      'City',
       'Postalcode',
+      'City',
       'Owner',
       'Phone',
       'E-Mail',
     ])
   );
+  const [locations, setLocations] = useState<TournamentLocation[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
 
   async function loadLocations() {
     setLoading(true);
     setError(null);
 
-    const locations = await getLocationOverview();
+    const result = await getLocationOverview();
 
-    if (!locations) {
+    if (!result) {
       setError('Failed to load locations.');
       setLoading(false);
       return;
     }
 
-    setTableOverview(generateNewTableOverview(tableOverview, toRows(locations)));
-
+    setLocations(result);
+    setTableOverview((prev) => generateNewTableOverview(prev, toRows(result)));
     setLoading(false);
+  }
+
+  async function handleDelete(rowIndex: number) {
+    const location = locations[rowIndex];
+    if (!location) return;
+    if (!window.confirm(`Delete location "${location.name ?? ''}"?`)) return;
+
+    try {
+      await deleteLocationById(location.id);
+      await loadLocations();
+      setSuccess(`Location "${location.name ?? ''}" deleted.`);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to delete location.');
+    }
   }
 
   useEffect(() => {
@@ -68,8 +85,13 @@ export default function LocationOverview() {
     <>
       <Headline variant={'h1'}>Locations</Headline>
       {error && (
-        <Alert variant={'error'}>
+        <Alert variant={'error'} onClose={() => setError(null)}>
           <span>{error}</span>
+        </Alert>
+      )}
+      {success && (
+        <Alert variant={'success'} onClose={() => setSuccess(null)}>
+          <span>{success}</span>
         </Alert>
       )}
       {loading && (
@@ -88,7 +110,15 @@ export default function LocationOverview() {
             <SquaresPlusIcon className={'size-6 inline-block mr-2'} />
             <span>Create New Location</span>
           </CustomButton>
-          <TableOverview {...tableOverview} />
+          <TableOverview
+            table={{
+              ...tableOverview.table,
+              body: {
+                ...tableOverview.table.body,
+                buttons: getButtonsDefault({ delete: handleDelete }),
+              },
+            }}
+          />
         </>
       )}
     </>

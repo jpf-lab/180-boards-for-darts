@@ -1,7 +1,11 @@
 import FormTemplate, { type FormFieldConfig } from '../components/forms/FormTemplate.tsx';
-import type { TournamentLocation } from '../types/Tournament.ts';
 import Headline from '../components/Headline.tsx';
-import { createLocation } from '../api/tournaments.ts';
+import { createLocationFromForm } from '../utils/locationHelper.ts';
+import type { TournamentLocation } from '../types/Tournament.ts';
+
+type LocationCreateProps = {
+  columns?: number;
+};
 
 const initialValues: TournamentLocation = {
   name: '',
@@ -101,20 +105,20 @@ const locationFields: FormFieldConfig<TournamentLocation>[] = [
   },
 ];
 
-export default function LocationCreate() {
+export default function LocationCreate(props: Readonly<LocationCreateProps>) {
   async function handleSubmit(values: TournamentLocation) {
-    await createLocation(values);
+    await createLocationFromForm(values);
   }
 
   return (
     <>
-      <Headline variant={'h2'}>Create Location</Headline>
+      <Headline variant={'h1'}>Create Location</Headline>
       <FormTemplate<TournamentLocation>
         legend={'Location'}
         fields={locationFields}
         initialValues={initialValues}
         onSubmit={handleSubmit}
-        columns={2}
+        columns={props.columns}
       />
     </>
   );

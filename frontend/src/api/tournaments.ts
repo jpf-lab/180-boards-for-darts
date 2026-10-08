@@ -19,7 +19,7 @@ export async function getTournamentById(id: string): Promise<TournamentItemRespo
 
 // Locations
 export async function getLocations(): Promise<TournamentLocation[]> {
-  const response = await axiosClient.get<TournamentItemResponse[]>('/locations');
+  const response = await axiosClient.get<TournamentLocation[]>('/locations');
   return response.data;
 }
 
