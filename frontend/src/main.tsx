@@ -7,7 +7,8 @@ import Tournaments from './routes/Tournaments.tsx';
 import Home from './routes/Home.tsx';
 import Participants from './routes/Participants.tsx';
 import Playfields from './routes/Playfields.tsx';
-import Locations from './routes/Locations.tsx';
+import LocationOverview from './routes/LocationOverview.tsx';
+import LocationCreate from './routes/LocationCreate.tsx';
 // import TournamentEdit from './components/TournamentEdit.tsx';
 
 type naviProps = naviItem[];
@@ -46,7 +47,7 @@ export const navi: naviProps = [
   {
     name: 'Locations',
     path: '/locations',
-    component: <Locations />,
+    component: <LocationOverview />,
     protected: true,
   },
 ];
@@ -57,6 +58,18 @@ export const customRoutes: naviProps = [
   //   path: '/tournaments/:id/edit',
   //   component: <TournamentEdit />,
   //   protected: true,
+  // },
+  {
+    path: '/locations/new',
+    name: 'Location Create',
+    component: <LocationCreate />,
+    protected: true,
+  },
+  // {
+  //   path: '/locations/:id/edit',
+  //   name: 'Location Edit',
+  //   protected: true,
+  //   element: <LocationEdit />,
   // },
 ];
 
