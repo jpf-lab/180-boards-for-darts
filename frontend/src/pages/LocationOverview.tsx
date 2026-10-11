@@ -12,6 +12,7 @@ import TableOverview, {
 import { deleteLocationById, getLocationOverview } from '../utils/locationHelper.ts';
 import { SquaresPlusIcon } from '@heroicons/react/24/solid';
 import CustomButton from '../components/CustomButton.tsx';
+import { useNavigate } from 'react-router-dom';
 
 function toRows(items?: TournamentLocation[]): ReactNode[][] {
   return items
@@ -46,6 +47,8 @@ export default function LocationOverview() {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
 
+  const navigate = useNavigate();
+
   async function loadLocations() {
     setLoading(true);
     setError(null);
@@ -75,6 +78,11 @@ export default function LocationOverview() {
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to delete location.');
     }
+  }
+
+  function handleEdit(rowIndex: number) {
+    const location = locations[rowIndex];
+    if (location?.id) navigate(`/locations/${location.id}/edit`);
   }
 
   useEffect(() => {
@@ -115,7 +123,7 @@ export default function LocationOverview() {
               ...tableOverview.table,
               body: {
                 ...tableOverview.table.body,
-                buttons: getButtonsDefault({ delete: handleDelete }),
+                buttons: getButtonsDefault({ edit: handleEdit, delete: handleDelete }),
               },
             }}
           />

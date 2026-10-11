@@ -1,13 +1,7 @@
-import FormTemplate, { type FormFieldConfig } from '../components/forms/FormTemplate.tsx';
-import Headline from '../components/Headline.tsx';
-import { createLocationFromForm } from '../utils/locationHelper.ts';
+import type { FormFieldConfig } from '../components/forms/FormTemplate.tsx';
 import type { TournamentLocation } from '../types/Tournament.ts';
 
-type LocationCreateProps = {
-  columns?: number;
-};
-
-const initialValues: TournamentLocation = {
+export const locationInitialValues: TournamentLocation = {
   name: '',
   street: '',
   number: '',
@@ -18,7 +12,7 @@ const initialValues: TournamentLocation = {
   contactMail: '',
 };
 
-const locationFields: FormFieldConfig<TournamentLocation>[] = [
+export const locationFields: FormFieldConfig<TournamentLocation>[] = [
   {
     field: 'name',
     id: 'location-name',
@@ -104,22 +98,3 @@ const locationFields: FormFieldConfig<TournamentLocation>[] = [
     errormessage: 'Must be exactly 5 digits.',
   },
 ];
-
-export default function LocationCreate(props: Readonly<LocationCreateProps>) {
-  async function handleSubmit(values: TournamentLocation) {
-    await createLocationFromForm(values);
-  }
-
-  return (
-    <>
-      <Headline variant={'h1'}>Create Location</Headline>
-      <FormTemplate<TournamentLocation>
-        legend={'Location'}
-        fields={locationFields}
-        initialValues={initialValues}
-        onSubmit={handleSubmit}
-        columns={props.columns}
-      />
-    </>
-  );
-}

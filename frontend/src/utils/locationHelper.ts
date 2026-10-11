@@ -1,6 +1,12 @@
 import axios from 'axios';
 import type { TournamentLocation, TournamentLocationOverview } from '../types/Tournament.ts';
-import { createLocation, deleteLocation, getLocations } from '../api/tournaments.ts';
+import {
+  createLocation,
+  deleteLocation,
+  getLocationByID,
+  getLocations,
+  updateLocation,
+} from '../api/tournaments.ts';
 
 export function generateGoogleMapsLink(address: string): string {
   return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`;
@@ -34,4 +40,20 @@ export async function deleteLocationById(id?: string): Promise<void> {
     }
     throw err;
   }
+}
+
+export async function getLocationById(id: string): Promise<TournamentLocation | undefined> {
+  try {
+    return await getLocationByID(id);
+  } catch (err) {
+    console.error(err);
+    return undefined;
+  }
+}
+
+export async function updateLocationById(
+  id: string,
+  values: TournamentLocation
+): Promise<TournamentLocation> {
+  return updateLocation(id, values);
 }
