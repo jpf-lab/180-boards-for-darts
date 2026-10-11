@@ -1,134 +1,33 @@
-import { type ReactNode, useEffect, useState } from 'react';
-import type { TournamentLocation } from '../types/Tournament.ts';
-import Headline from '../components/Headline.tsx';
-import Alert from '../components/Alert.tsx';
-import LoadingText from '../components/LoadingText.tsx';
-import TableOverview, {
-  generateNewTableOverview,
-  getButtonsDefault,
-  getTableOverviewDefault,
-  type TableOverviewProps,
-} from '../components/tables/TableOverview.tsx';
+import EntityOverview from '../components/entity/EntityOverview.tsx';
 import { deleteLocationById, getLocationOverview } from '../utils/locationHelper.ts';
-import { SquaresPlusIcon } from '@heroicons/react/24/solid';
-import CustomButton from '../components/CustomButton.tsx';
-import { useNavigate } from 'react-router-dom';
+import type { TournamentLocation } from '../types/Tournament.ts';
 
-function toRows(items?: TournamentLocation[]): ReactNode[][] {
-  return items
-    ? items.map((item) => [
-        item.name || 'Not found',
-        item.street || 'Not found',
-        item.number || 'Not found',
-        item.postalcode || 'Not found',
-        item.city || 'Not found',
-        item.owner || 'Not found',
-        item.contactPhone || 'Not found',
-        item.contactMail || 'Not found',
-      ])
-    : [];
-}
+const NOT_FOUND = 'Not found';
+
+const toRow = (item: TournamentLocation) => [
+  item.name || NOT_FOUND,
+  item.street || NOT_FOUND,
+  item.number || NOT_FOUND,
+  item.postalcode || NOT_FOUND,
+  item.city || NOT_FOUND,
+  item.owner || NOT_FOUND,
+  item.contactPhone || NOT_FOUND,
+  item.contactMail || NOT_FOUND,
+];
+
+const getLabel = (item: TournamentLocation) => item.name ?? '';
 
 export default function LocationOverview() {
-  const [tableOverview, setTableOverview] = useState<TableOverviewProps>(
-    getTableOverviewDefault([
-      'Name',
-      'Street',
-      'Number',
-      'Postalcode',
-      'City',
-      'Owner',
-      'Phone',
-      'E-Mail',
-    ])
-  );
-  const [locations, setLocations] = useState<TournamentLocation[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState<string | null>(null);
-
-  const navigate = useNavigate();
-
-  async function loadLocations() {
-    setLoading(true);
-    setError(null);
-
-    const result = await getLocationOverview();
-
-    if (!result) {
-      setError('Failed to load locations.');
-      setLoading(false);
-      return;
-    }
-
-    setLocations(result);
-    setTableOverview((prev) => generateNewTableOverview(prev, toRows(result)));
-    setLoading(false);
-  }
-
-  async function handleDelete(rowIndex: number) {
-    const location = locations[rowIndex];
-    if (!location) return;
-    if (!window.confirm(`Delete location "${location.name ?? ''}"?`)) return;
-
-    try {
-      await deleteLocationById(location.id);
-      await loadLocations();
-      setSuccess(`Location "${location.name ?? ''}" deleted.`);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to delete location.');
-    }
-  }
-
-  function handleEdit(rowIndex: number) {
-    const location = locations[rowIndex];
-    if (location?.id) navigate(`/locations/${location.id}/edit`);
-  }
-
-  useEffect(() => {
-    void loadLocations();
-  }, []);
-
   return (
-    <>
-      <Headline variant={'h1'}>Locations</Headline>
-      {error && (
-        <Alert variant={'error'} onClose={() => setError(null)}>
-          <span>{error}</span>
-        </Alert>
-      )}
-      {success && (
-        <Alert variant={'success'} onClose={() => setSuccess(null)}>
-          <span>{success}</span>
-        </Alert>
-      )}
-      {loading && (
-        <div>
-          <LoadingText />
-        </div>
-      )}
-      {!error && !loading && (
-        <>
-          <CustomButton
-            variant={'link'}
-            to={'/locations/new'}
-            buttonstyle={'green'}
-            className={'mb-4'}
-          >
-            <SquaresPlusIcon className={'size-6 inline-block mr-2'} />
-            <span>Create New Location</span>
-          </CustomButton>
-          <TableOverview
-            table={{
-              ...tableOverview.table,
-              body: {
-                ...tableOverview.table.body,
-                buttons: getButtonsDefault({ edit: handleEdit, delete: handleDelete }),
-              },
-            }}
-          />
-        </>
-      )}
-    </>
+    <EntityOverview<TournamentLocation>
+      title={'Locations'}
+      entityName={'Location'}
+      basePath={'/locations'}
+      columnTitles={['Name', 'Street', 'Number', 'Postalcode', 'City', 'Owner', 'Phone', 'E-Mail']}
+      toRow={toRow}
+      getLabel={getLabel}
+      loadAll={getLocationOverview}
+      onDelete={deleteLocationById}
+    />
   );
 }
