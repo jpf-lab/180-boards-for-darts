@@ -1,5 +1,5 @@
 import { type ReactNode, useEffect, useState } from 'react';
-import type { TournamentParticipant } from '../types/Tournament.ts';
+import type { TournamentOverviewItem } from '../types/Tournament.ts';
 import Headline from '../components/Headline.tsx';
 import Alert from '../components/Alert.tsx';
 import LoadingText from '../components/LoadingText.tsx';
@@ -8,45 +8,43 @@ import TableOverview, {
   getTableOverviewDefault,
   type TableOverviewProps,
 } from '../components/tables/TableOverview.tsx';
-import { getParticipantOverview } from '../utils/participantHelper.ts';
+import { getPlayfieldOverview } from '../utils/playfieldHelper.ts';
 
-function toRows(items?: TournamentParticipant[]): ReactNode[][] | [] {
-  return items
-    ? items.map((item) => [item.lastname || 'Not found', item.firstname || 'Not found'])
-    : [];
+function toRows(items?: TournamentOverviewItem[]): ReactNode[][] | [] {
+  return items ? items.map((item) => [item.name || 'Not found']) : [];
 }
 
-export default function Participants() {
+export default function PlayfieldsOverview() {
   const [tableOverview, setTableOverview] = useState<TableOverviewProps>(
-    getTableOverviewDefault(['Lastname', 'Firstname'])
+    getTableOverviewDefault(['Name'])
   );
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  async function loadParticipants() {
+  async function loadPlayfields() {
     setLoading(true);
     setError(null);
 
-    const participants = await getParticipantOverview();
+    const tournaments = await getPlayfieldOverview();
 
-    if (!participants) {
-      setError('Failed to load participants.');
+    if (!tournaments) {
+      setError('Failed to load tournaments.');
       setLoading(false);
       return;
     }
 
-    setTableOverview(generateNewTableOverview(tableOverview, toRows(participants)));
+    setTableOverview(generateNewTableOverview(tableOverview, toRows(tournaments)));
 
     setLoading(false);
   }
 
   useEffect(() => {
-    void loadParticipants();
+    void loadPlayfields();
   }, []);
 
   return (
     <>
-      <Headline variant={'h1'}>Participants</Headline>
+      <Headline variant={'h1'}>Playfields</Headline>
       {error && (
         <Alert variant={'error'}>
           <span>{error}</span>
