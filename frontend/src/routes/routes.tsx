@@ -1,11 +1,13 @@
 import type { JSX } from 'react';
 import Home from '../pages/Home.tsx';
 import TournamentsOverview from '../pages/TournamentsOverview.tsx';
-import ParticipantsOverview from '../pages/ParticipantsOverview.tsx';
+import ParticipantOverview from '../pages/ParticipantOverview.tsx';
 import PlayfieldsOverview from '../pages/PlayfieldsOverview.tsx';
 import LocationOverview from '../pages/LocationOverview.tsx';
 import LocationCreate from '../pages/LocationCreate.tsx';
 import LocationEdit from '../pages/LocationEdit.tsx';
+import ParticipantCreate from '../pages/ParticipantCreate.tsx';
+import ParticipantEdit from '../pages/ParticipantEdit.tsx';
 
 export type AppRoute = {
   name: string;
@@ -28,9 +30,21 @@ export const routes: AppRoute[] = [
   {
     name: 'Participants',
     path: '/participants',
-    element: <ParticipantsOverview />,
+    element: <ParticipantOverview />,
     protected: true,
     showInNavigation: true,
+  },
+  {
+    name: 'Participant Create',
+    path: '/participants/new',
+    element: <ParticipantCreate columns={2} />,
+    protected: true,
+  },
+  {
+    name: 'Participant Edit',
+    path: '/participants/:id/edit',
+    element: <ParticipantEdit columns={2} />,
+    protected: true,
   },
   {
     name: 'Playfields',
