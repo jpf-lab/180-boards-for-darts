@@ -2,12 +2,14 @@ import type { JSX } from 'react';
 import Home from '../pages/Home.tsx';
 import TournamentsOverview from '../pages/TournamentsOverview.tsx';
 import ParticipantOverview from '../pages/ParticipantOverview.tsx';
-import PlayfieldsOverview from '../pages/PlayfieldsOverview.tsx';
+import PlayfieldOverview from '../pages/PlayfieldOverview.tsx';
 import LocationOverview from '../pages/LocationOverview.tsx';
 import LocationCreate from '../pages/LocationCreate.tsx';
 import LocationEdit from '../pages/LocationEdit.tsx';
 import ParticipantCreate from '../pages/ParticipantCreate.tsx';
 import ParticipantEdit from '../pages/ParticipantEdit.tsx';
+import PlayfieldCreate from '../pages/PlayfieldCreate.tsx';
+import PlayfieldEdit from '../pages/PlayfieldEdit.tsx';
 
 export type AppRoute = {
   name: string;
@@ -49,9 +51,21 @@ export const routes: AppRoute[] = [
   {
     name: 'Playfields',
     path: '/playfields',
-    element: <PlayfieldsOverview />,
+    element: <PlayfieldOverview />,
     protected: true,
     showInNavigation: true,
+  },
+  {
+    name: 'Playfield Create',
+    path: '/playfields/new',
+    element: <PlayfieldCreate />,
+    protected: true,
+  },
+  {
+    name: 'Playfield Edit',
+    path: '/playfields/:id/edit',
+    element: <PlayfieldEdit />,
+    protected: true,
   },
   {
     name: 'Locations',
