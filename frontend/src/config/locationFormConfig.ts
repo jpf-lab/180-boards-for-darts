@@ -1,5 +1,6 @@
 import type { FormFieldConfig } from '../components/forms/FormTemplate.tsx';
 import type { TournamentLocation } from '../types/Tournament.ts';
+import type { SearchFormConfig } from '../components/forms/SearchForm.tsx';
 
 export const locationInitialValues: TournamentLocation = {
   name: '',
@@ -98,3 +99,12 @@ export const locationFields: FormFieldConfig<TournamentLocation>[] = [
     errormessage: 'Must be exactly 5 digits.',
   },
 ];
+
+export const locationSearchForm: SearchFormConfig = {
+  legend: 'Search Location',
+  id: 'location-search',
+  label: 'Search term',
+  placeholder: 'e.g. Berlin, 10115 or Dart Club',
+  minLength: 2,
+  errormessage: 'Please enter at least 2 characters.',
+};

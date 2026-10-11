@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.regex.Pattern;
 
 @RestController
 @RequestMapping("/api/locations")
@@ -69,5 +70,14 @@ public class LocationController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable String id) {
         locationRepo.deleteById(id);
+    }
+
+    @GetMapping("/search")
+    public List<Location> search(@RequestParam String query) {
+        if (query.isBlank()) {
+            return List.of();
+        }
+        String term = query.trim();
+        return locationRepo.searchByTerm(Pattern.quote(term), term);
     }
 }
