@@ -85,3 +85,22 @@ export async function getPlayfieldById(id: string): Promise<TournamentPlayfield>
   const response = await axiosClient.get<TournamentPlayfield>(`/playfields/${id}`);
   return response.data;
 }
+
+export async function createPlayfield(
+  playfield: TournamentPlayfield
+): Promise<TournamentPlayfield> {
+  const response = await axiosClient.post<TournamentPlayfield>('/playfields', playfield);
+  return response.data; // 201 Created
+}
+
+export async function updatePlayfield(
+  id: string,
+  playfield: TournamentPlayfield
+): Promise<TournamentPlayfield> {
+  const response = await axiosClient.put<TournamentPlayfield>(`/playfields/${id}`, playfield);
+  return response.data;
+}
+
+export async function deletePlayfield(id: string): Promise<void> {
+  await axiosClient.delete(`/playfields/${id}`); // 204 No Content
+}
