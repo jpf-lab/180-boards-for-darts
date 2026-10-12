@@ -1,12 +1,14 @@
 import TableRow from './TableRow.tsx';
 import TableCell from './TableCell.tsx';
 import type { ReactNode } from 'react';
-import CustomButton, { type CustomButtonProps } from '../CustomButton.tsx';
+import CustomButton from '../CustomButton.tsx';
 import { PencilIcon, TrashIcon } from '@heroicons/react/24/solid';
 
 export type TableOverviewBodyData = (ReactNode | undefined)[][];
 
 export type TableOverviewTitles = string[];
+
+export type TableOverviewButton = (rowIndex: number) => ReactNode;
 
 export type TableOverviewProps = {
   table: {
@@ -15,43 +17,53 @@ export type TableOverviewProps = {
     };
     body: {
       data?: TableOverviewBodyData;
-      buttons?: ReactNode[];
+      buttons?: TableOverviewButton[];
     };
   };
 };
 
-type OmittedCustomButtonProps = Omit<CustomButtonProps, 'buttonstyle' | 'title'>;
-
 type OverviewButtonProps = {
-  edit?: OmittedCustomButtonProps;
-  delete?: OmittedCustomButtonProps;
+  edit?: (rowIndex: number) => void | Promise<void>;
+  delete?: (rowIndex: number) => void | Promise<void>;
 };
 
-export function getButtonsDefault(props: OverviewButtonProps) {
-  return [
-    <div key={'overview-edit'} className={'flex items-center justify-center'}>
-      <CustomButton {...(props.edit as CustomButtonProps)}>
-        <PencilIcon className={'size-3'} title={'Edit'} />
-      </CustomButton>
-    </div>,
-    <div key={'overview-delete'} className={'flex items-center justify-center'}>
-      <CustomButton {...(props.delete as CustomButtonProps)} buttonstyle={'red'} title={'Delete'}>
-        <TrashIcon className={'size-3'} />
-      </CustomButton>
-    </div>,
-  ];
+export function getButtonsDefault(props: OverviewButtonProps): TableOverviewButton[] {
+  const { edit, delete: onDelete } = props;
+  const buttons: TableOverviewButton[] = [];
+
+  if (edit) {
+    buttons.push((rowIndex) => (
+      <div className={'flex items-center justify-center'}>
+        <CustomButton type={'button'} title={'Edit'} onClick={() => void edit(rowIndex)}>
+          <PencilIcon className={'size-3'} />
+        </CustomButton>
+      </div>
+    ));
+  }
+
+  if (onDelete) {
+    buttons.push((rowIndex) => (
+      <div className={'flex items-center justify-center'}>
+        <CustomButton
+          type={'button'}
+          buttonstyle={'red'}
+          title={'Delete'}
+          onClick={() => void onDelete(rowIndex)}
+        >
+          <TrashIcon className={'size-3'} />
+        </CustomButton>
+      </div>
+    ));
+  }
+
+  return buttons;
 }
 
-export function getTableOverviewDefault(props: TableOverviewTitles) {
+export function getTableOverviewDefault(titles: TableOverviewTitles): TableOverviewProps {
   return {
     table: {
-      header: {
-        titles: props.map((title) => title),
-      },
-      body: {
-        data: [],
-        buttons: getButtonsDefault({}),
-      },
+      header: { titles: [...titles] },
+      body: { data: [] },
     },
   };
 }
@@ -64,15 +76,14 @@ export function generateNewTableOverview(
     ...prevData,
     table: {
       ...prevData.table,
-      body: {
-        ...prevData.table.body,
-        data: newData,
-      },
+      body: { ...prevData.table.body, data: newData },
     },
   };
 }
 
 export default function TableOverview(props: Readonly<TableOverviewProps>) {
+  const buttons = props.table.body.buttons ?? [];
+
   return (
     <div className={'border-2 border-sky-800 bg-gray-950 text-left rounded-t-2xl overflow-x-auto'}>
       <table className={'table-auto w-full'}>
@@ -83,34 +94,30 @@ export default function TableOverview(props: Readonly<TableOverviewProps>) {
                 {title}
               </TableCell>
             ))}
-            {props.table.body.buttons?.length && (
-              <TableCell colSpan={props.table.body.buttons?.length} />
-            )}
+            {buttons.length > 0 && <TableCell colSpan={buttons.length} />}
           </TableRow>
         </thead>
         <tbody>
           {props.table.body.data?.length ? (
-            <>
-              {props.table.body.data.map((item, rowIndex) => (
-                <TableRow key={'tableRow' + rowIndex}>
-                  {item.map((cell, cellIndex) => (
-                    <TableCell key={'dataCell-' + rowIndex + '-' + cellIndex}>
-                      {cell ?? '-'}
-                    </TableCell>
-                  ))}
-                  {props.table.body.buttons?.map((item, buttonIndex) => (
-                    <TableCell key={'button-' + rowIndex + '-' + buttonIndex}>
-                      {item ?? '-'}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              ))}
-            </>
+            props.table.body.data.map((row, rowIndex) => (
+              <TableRow key={'tableRow' + rowIndex}>
+                {row.map((cell, cellIndex) => (
+                  <TableCell key={'dataCell-' + rowIndex + '-' + cellIndex}>
+                    {cell ?? '-'}
+                  </TableCell>
+                ))}
+                {buttons.map((button, buttonIndex) => (
+                  <TableCell key={'button-' + rowIndex + '-' + buttonIndex}>
+                    {button(rowIndex)}
+                  </TableCell>
+                ))}
+              </TableRow>
+            ))
           ) : (
             <TableRow>
               <TableCell
                 className={'text-center'}
-                colSpan={props.table.header.titles.length + (props.table.body.buttons?.length ?? 0)}
+                colSpan={props.table.header.titles.length + buttons.length}
               >
                 No results
               </TableCell>

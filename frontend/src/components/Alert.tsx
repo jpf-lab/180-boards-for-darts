@@ -4,12 +4,15 @@ import {
   ExclamationCircleIcon,
   ExclamationTriangleIcon,
   InformationCircleIcon,
+  XMarkIcon,
 } from '@heroicons/react/24/solid';
 
 type Variant = 'error' | 'success' | 'warning' | 'info';
 
 type AlertProps = PropsWithChildren & {
   variant?: Variant;
+  /** Shows a close button when provided */
+  onClose?: () => void;
 };
 
 const icons: Record<Variant, ComponentType<SVGProps<SVGSVGElement>>> = {
@@ -26,7 +29,7 @@ const styles: Record<Variant, string> = {
   info: 'bg-blue-50 text-blue-800 ring-blue-800',
 };
 
-export default function Alert({ variant = 'info', ...props }: AlertProps) {
+export default function Alert({ variant = 'info', onClose, children }: AlertProps) {
   const Icon = icons[variant];
 
   return (
@@ -35,7 +38,20 @@ export default function Alert({ variant = 'info', ...props }: AlertProps) {
       role="alert"
     >
       <Icon className={'size-6 inline-block mr-4 shrink-0'} />
-      <div className={'inline-block'}>{props.children}</div>
+      <div className={'grow'}>{children}</div>
+      {onClose && (
+        <button
+          type={'button'}
+          aria-label={'Close'}
+          title={'Close'}
+          onClick={onClose}
+          className={
+            'ml-4 shrink-0 rounded-full p-1 hover:cursor-pointer hover:bg-black/10 focus:outline-none focus:ring-2 focus:ring-current'
+          }
+        >
+          <XMarkIcon className={'size-5'} />
+        </button>
+      )}
     </div>
   );
 }

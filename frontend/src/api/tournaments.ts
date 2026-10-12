@@ -19,13 +19,30 @@ export async function getTournamentById(id: string): Promise<TournamentItemRespo
 
 // Locations
 export async function getLocations(): Promise<TournamentLocation[]> {
-  const response = await axiosClient.get<TournamentItemResponse[]>('/locations');
+  const response = await axiosClient.get<TournamentLocation[]>('/locations');
   return response.data;
 }
 
 export async function getLocationByID(id: string): Promise<TournamentLocation> {
   const response = await axiosClient.get<TournamentLocation>(`/locations/${id}`);
   return response.data;
+}
+
+export async function createLocation(location: TournamentLocation): Promise<TournamentLocation> {
+  const response = await axiosClient.post<TournamentLocation>('/locations', location);
+  return response.data;
+}
+
+export async function updateLocation(
+  id: string,
+  location: TournamentLocation
+): Promise<TournamentLocation> {
+  const response = await axiosClient.put<TournamentLocation>(`/locations/${id}`, location);
+  return response.data;
+}
+
+export async function deleteLocation(id: string): Promise<void> {
+  await axiosClient.delete(`/locations/${id}`);
 }
 
 // Participants
