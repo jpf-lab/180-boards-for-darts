@@ -23,7 +23,7 @@ function toRows(items?: TournamentOverviewItem[]): ReactNode[][] | [] {
     : [];
 }
 
-export default function Tournaments() {
+export default function TournamentsOverview() {
   const [tableOverview, setTableOverview] = useState<TableOverviewProps>(
     getTableOverviewDefault(['Name', 'Date', 'Location', 'Participants', 'Playfields'])
   );

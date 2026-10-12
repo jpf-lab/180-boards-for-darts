@@ -1,11 +1,11 @@
 import { Routes, Route } from 'react-router';
+import { useState } from 'react';
 import Navigation from './components/Navigation.tsx';
 import Header from './components/Header.tsx';
 import Footer from './components/Footer.tsx';
-import { useState } from 'react';
-import type { AppUserType } from './types/AppUser.ts';
-import { customRoutes, navi } from './main.tsx';
 import ProtectedRoute from './components/ProtectedRoute.tsx';
+import type { AppUserType } from './types/AppUser.ts';
+import { routes } from './routes/routes.tsx';
 
 function App() {
   const [user, setUser] = useState<AppUserType | undefined>(undefined);
@@ -16,17 +16,12 @@ function App() {
       <Navigation user={user} />
       <main className={'flex-1 bg-gray-600 text-white p-5'}>
         <Routes>
-          {navi.map((nav, i) => (
-            <Route key={'route' + i} element={nav.protected && <ProtectedRoute user={user} />}>
-              <Route path={nav.path} element={nav.component} />
-            </Route>
-          ))}
-          {customRoutes.map((nav, i) => (
+          {routes.map((route) => (
             <Route
-              key={'customRoute' + i}
-              element={nav.protected && <ProtectedRoute user={user} />}
+              key={route.path}
+              element={route.protected ? <ProtectedRoute user={user} /> : undefined}
             >
-              <Route path={nav.path} element={nav.component} />
+              <Route path={route.path} element={route.element} />
             </Route>
           ))}
         </Routes>
