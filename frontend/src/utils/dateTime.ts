@@ -9,3 +9,11 @@ export function datetimeLocalToInstant(value: string): string | undefined {
   const date = new Date(value);
   return Number.isNaN(date.getTime()) ? undefined : date.toISOString();
 }
+
+export function instantToDatetimeLocal(instant?: string): string {
+  if (!instant) return '';
+  const date = new Date(instant);
+  if (Number.isNaN(date.getTime())) return '';
+  date.setMinutes(date.getMinutes() - date.getTimezoneOffset());
+  return date.toISOString().slice(0, 16);
+}

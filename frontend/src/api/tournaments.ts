@@ -23,6 +23,13 @@ export async function createTournament(
   return (await axiosClient.post<TournamentItemResponse>('/tournaments', tournament)).data;
 }
 
+export async function updateTournament(
+  id: string,
+  tournament: TournamentItemResponse
+): Promise<TournamentItemResponse> {
+  return (await axiosClient.put<TournamentItemResponse>(`/tournaments/${id}`, tournament)).data;
+}
+
 export async function deleteTournament(id: string): Promise<void> {
   await axiosClient.delete(`/tournaments/${id}`);
 }
