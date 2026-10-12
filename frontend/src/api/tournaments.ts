@@ -104,3 +104,25 @@ export async function updatePlayfield(
 export async function deletePlayfield(id: string): Promise<void> {
   await axiosClient.delete(`/playfields/${id}`); // 204 No Content
 }
+
+// Search
+export async function searchParticipants(query: string): Promise<TournamentParticipant[]> {
+  const response = await axiosClient.get<TournamentParticipant[]>('/participants/search', {
+    params: { query },
+  });
+  return response.data;
+}
+
+export async function searchLocations(query: string): Promise<TournamentLocation[]> {
+  const response = await axiosClient.get<TournamentLocation[]>('/locations/search', {
+    params: { query },
+  });
+  return response.data;
+}
+
+export async function searchPlayfields(query: string): Promise<TournamentPlayfield[]> {
+  const response = await axiosClient.get<TournamentPlayfield[]>('/playfields/search', {
+    params: { query },
+  });
+  return response.data;
+}

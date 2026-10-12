@@ -12,6 +12,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.regex.Pattern;
 
 import static org.example.backend.security.TestSecurity.adminLogin;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
@@ -19,8 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -162,5 +162,46 @@ class LocationControllerTest {
                 .andExpect(status().isNoContent());
 
         verify(locationRepo).deleteById(LOCATION_ID);
+    }
+
+    @Test
+    void search_returnsMatchingLocations() throws Exception {
+        Location location = Location.builder().id(LOCATION_ID).name("Testort").city("Berlin").build();
+        when(locationRepo.searchByTerm(Pattern.quote("Berlin"), "Berlin"))
+                .thenReturn(List.of(location));
+
+        String expectedJson = """
+            [ { "id": "507f1f77bcf86cd799439011", "name": "Testort", "city": "Berlin" } ]
+            """;
+
+        mockMvc.perform(get("/api/locations/search").param("query", "Berlin").with(adminLogin()))
+                .andExpect(status().isOk())
+                .andExpect(content().json(expectedJson));
+    }
+
+    @Test
+    void search_trimsQuery() throws Exception {
+        when(locationRepo.searchByTerm(Pattern.quote("10115"), "10115")).thenReturn(List.of());
+
+        mockMvc.perform(get("/api/locations/search").param("query", "  10115  ").with(adminLogin()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(0));
+
+        verify(locationRepo).searchByTerm(Pattern.quote("10115"), "10115");
+    }
+
+    @Test
+    void search_returnsEmptyList_whenQueryIsBlank() throws Exception {
+        mockMvc.perform(get("/api/locations/search").param("query", "   ").with(adminLogin()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(0));
+
+        verify(locationRepo, never()).searchByTerm(any(), any());
+    }
+
+    @Test
+    void search_returnsBadRequest_whenQueryParamIsMissing() throws Exception {
+        mockMvc.perform(get("/api/locations/search").with(adminLogin()))
+                .andExpect(status().isBadRequest());
     }
 }

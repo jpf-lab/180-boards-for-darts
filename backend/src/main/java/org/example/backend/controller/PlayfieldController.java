@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.regex.Pattern;
 
 @RestController
 @RequestMapping("/api/playfields")
@@ -56,5 +57,14 @@ public class PlayfieldController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable String id) {
         playfieldRepo.deleteById(id);
+    }
+
+    @GetMapping("/search")
+    public List<Playfield> search(@RequestParam String query) {
+        if (query.isBlank()) {
+            return List.of();
+        }
+        String term = query.trim();
+        return playfieldRepo.searchByTerm(Pattern.quote(term), term);
     }
 }

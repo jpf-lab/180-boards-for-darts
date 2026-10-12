@@ -1,5 +1,6 @@
 import type { FormFieldConfig } from '../components/forms/FormTemplate.tsx';
 import type { TournamentParticipant } from '../types/Tournament.ts';
+import type { SearchFormConfig } from '../components/forms/SearchForm.tsx';
 
 export const participantInitialValues: TournamentParticipant = {
   lastname: '',
@@ -30,3 +31,12 @@ export const participantFields: FormFieldConfig<TournamentParticipant>[] = [
     errormessage: 'Lastname must be between 2 and 100 characters.',
   },
 ];
+
+export const participantSearchForm: SearchFormConfig = {
+  legend: 'Search Participant',
+  id: 'participant-search',
+  label: 'Search term',
+  placeholder: 'e.g. Max Mustermann',
+  minLength: 2,
+  errormessage: 'Please enter at least 2 characters.',
+};

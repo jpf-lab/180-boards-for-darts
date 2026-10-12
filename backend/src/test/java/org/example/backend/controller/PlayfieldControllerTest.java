@@ -12,6 +12,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.regex.Pattern;
 
 import static org.example.backend.security.TestSecurity.adminLogin;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
@@ -19,8 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -139,5 +139,35 @@ class PlayfieldControllerTest {
                 .andExpect(status().isNoContent());
 
         verify(playfieldRepo).deleteById(PLAYFIELD_ID);
+    }
+
+    @Test
+    void search_returnsMatchingPlayfields() throws Exception {
+        Playfield playfield = Playfield.builder().id(PLAYFIELD_ID).name("Dartscheibe 1").build();
+        when(playfieldRepo.searchByTerm(Pattern.quote("Dart"), "Dart"))
+                .thenReturn(List.of(playfield));
+
+        String expectedJson = """
+            [ { "id": "507f1f77bcf86cd799439011", "name": "Dartscheibe 1" } ]
+            """;
+
+        mockMvc.perform(get("/api/playfields/search").param("query", "Dart").with(adminLogin()))
+                .andExpect(status().isOk())
+                .andExpect(content().json(expectedJson));
+    }
+
+    @Test
+    void search_returnsEmptyList_whenQueryIsBlank() throws Exception {
+        mockMvc.perform(get("/api/playfields/search").param("query", " ").with(adminLogin()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(0));
+
+        verify(playfieldRepo, never()).searchByTerm(any(), any());
+    }
+
+    @Test
+    void search_returnsBadRequest_whenQueryParamIsMissing() throws Exception {
+        mockMvc.perform(get("/api/playfields/search").with(adminLogin()))
+                .andExpect(status().isBadRequest());
     }
 }

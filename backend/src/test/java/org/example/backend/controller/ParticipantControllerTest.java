@@ -12,6 +12,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.regex.Pattern;
 
 import static org.example.backend.security.TestSecurity.adminLogin;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
@@ -19,8 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -139,5 +139,48 @@ class ParticipantControllerTest {
                 .andExpect(status().isNoContent());
 
         verify(participantRepo).deleteById(PARTICIPANT_ID);
+    }
+
+    @Test
+    void search_returnsMatchingParticipants() throws Exception {
+        Participant max = Participant.builder().id(PARTICIPANT_ID).firstname("Max").lastname("Mustermann").build();
+        Participant erika = Participant.builder().id("507f1f77bcf86cd799439012").firstname("Erika").lastname("Musterfrau").build();
+        when(participantRepo.searchByToken(Pattern.quote("muster"), "muster"))
+                .thenReturn(List.of(max, erika));
+
+        mockMvc.perform(get("/api/participants/search").param("query", "muster").with(adminLogin()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(2))
+                .andExpect(jsonPath("$[0].firstname").value("Max"))
+                .andExpect(jsonPath("$[1].firstname").value("Erika"));
+    }
+
+    @Test
+    void search_filtersByAllTokens() throws Exception {
+        Participant max = Participant.builder().id(PARTICIPANT_ID).firstname("Max").lastname("Mustermann").build();
+        Participant erika = Participant.builder().id("507f1f77bcf86cd799439012").firstname("Erika").lastname("Musterfrau").build();
+        // Das Repo wird nur mit dem längsten Token "mus" befragt, "ma" filtert der Service
+        when(participantRepo.searchByToken(Pattern.quote("mus"), "mus"))
+                .thenReturn(List.of(max, erika));
+
+        mockMvc.perform(get("/api/participants/search").param("query", "ma mus").with(adminLogin()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(1))
+                .andExpect(jsonPath("$[0].lastname").value("Mustermann"));
+    }
+
+    @Test
+    void search_returnsEmptyList_whenQueryIsBlank() throws Exception {
+        mockMvc.perform(get("/api/participants/search").param("query", "   ").with(adminLogin()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(0));
+
+        verify(participantRepo, never()).searchByToken(any(), any());
+    }
+
+    @Test
+    void search_returnsBadRequest_whenQueryParamIsMissing() throws Exception {
+        mockMvc.perform(get("/api/participants/search").with(adminLogin()))
+                .andExpect(status().isBadRequest());
     }
 }

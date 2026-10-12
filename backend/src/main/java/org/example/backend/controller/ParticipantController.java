@@ -3,6 +3,7 @@ package org.example.backend.controller;
 import org.example.backend.dto.ParticipantDTO;
 import org.example.backend.model.Participant;
 import org.example.backend.repository.ParticipantRepo;
+import org.example.backend.service.ParticipantService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,9 +15,13 @@ import java.util.NoSuchElementException;
 public class ParticipantController {
 
     private final ParticipantRepo participantRepo;
+    private final ParticipantService participantService;
 
-    public ParticipantController(ParticipantRepo participantRepo){
+
+    public ParticipantController(ParticipantRepo participantRepo,
+                                 ParticipantService participantService) {
         this.participantRepo = participantRepo;
+        this.participantService = participantService;
     }
 
     @GetMapping
@@ -58,5 +63,10 @@ public class ParticipantController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable String id) {
         participantRepo.deleteById(id);
+    }
+
+    @GetMapping("/search")
+    public List<Participant> search(@RequestParam String query) {
+        return participantService.search(query);
     }
 }
