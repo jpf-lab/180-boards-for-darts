@@ -1,30 +1,22 @@
-import type {
-  TournamentItemResponse,
-  TournamentLocation,
-  TournamentOverview,
-  TournamentOverviewItem,
-} from '../types/Tournament.ts';
-import { getLocationByID, getTournaments } from '../api/tournaments.ts';
+import type { TournamentOverviewItem } from '../types/Tournament.ts';
+import { deleteTournament, getLocationByID, getTournaments } from '../api/tournaments.ts';
 
-export async function getTournamentOverview(): Promise<TournamentOverview | undefined> {
+export async function getTournamentOverview(): Promise<TournamentOverviewItem[] | undefined> {
   try {
-    const tournamentsItemResponse: TournamentItemResponse[] = await getTournaments();
-
+    const items = await getTournaments();
     return await Promise.all(
-      tournamentsItemResponse.map(
-        async (tournament: TournamentItemResponse): Promise<TournamentOverviewItem> => {
-          if (tournament.locationId) {
-            const locationResponse: TournamentLocation = await getLocationByID(
-              tournament.locationId
-            );
-            return { ...tournament, location: locationResponse };
-          }
-          return { ...tournament };
-        }
-      )
+      items.map(async (tournament): Promise<TournamentOverviewItem> => {
+        if (!tournament.locationId) return { ...tournament };
+        return { ...tournament, location: await getLocationByID(tournament.locationId) };
+      })
     );
   } catch (err) {
     console.error(err);
     return undefined;
   }
+}
+
+export async function deleteTournamentById(id?: string): Promise<void> {
+  if (!id) throw new Error('No tournament id provided.');
+  await deleteTournament(id);
 }

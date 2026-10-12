@@ -2,7 +2,7 @@ import TableRow from './TableRow.tsx';
 import TableCell from './TableCell.tsx';
 import type { ReactNode } from 'react';
 import CustomButton from '../CustomButton.tsx';
-import { PencilIcon, TrashIcon } from '@heroicons/react/24/solid';
+import { PencilIcon, PlusIcon, TrashIcon, XMarkIcon } from '@heroicons/react/24/solid';
 
 export type TableOverviewBodyData = (ReactNode | undefined)[][];
 
@@ -22,38 +22,49 @@ export type TableOverviewProps = {
   };
 };
 
+type RowHandler = (rowIndex: number) => void | Promise<void>;
+
 type OverviewButtonProps = {
-  edit?: (rowIndex: number) => void | Promise<void>;
-  delete?: (rowIndex: number) => void | Promise<void>;
+  add?: RowHandler;
+  edit?: RowHandler;
+  delete?: RowHandler;
+  remove?: RowHandler;
 };
 
+function rowButton(
+  title: string,
+  icon: ReactNode,
+  handler: RowHandler,
+  buttonstyle?: 'green' | 'red'
+): TableOverviewButton {
+  return (rowIndex) => (
+    <div className={'flex items-center justify-center'}>
+      <CustomButton
+        type={'button'}
+        title={title}
+        buttonstyle={buttonstyle}
+        onClick={() => void handler(rowIndex)}
+      >
+        {icon}
+      </CustomButton>
+    </div>
+  );
+}
+
 export function getButtonsDefault(props: OverviewButtonProps): TableOverviewButton[] {
-  const { edit, delete: onDelete } = props;
   const buttons: TableOverviewButton[] = [];
 
-  if (edit) {
-    buttons.push((rowIndex) => (
-      <div className={'flex items-center justify-center'}>
-        <CustomButton type={'button'} title={'Edit'} onClick={() => void edit(rowIndex)}>
-          <PencilIcon className={'size-3'} />
-        </CustomButton>
-      </div>
-    ));
+  if (props.add) {
+    buttons.push(rowButton('Add', <PlusIcon className={'size-3'} />, props.add, 'green'));
   }
-
-  if (onDelete) {
-    buttons.push((rowIndex) => (
-      <div className={'flex items-center justify-center'}>
-        <CustomButton
-          type={'button'}
-          buttonstyle={'red'}
-          title={'Delete'}
-          onClick={() => void onDelete(rowIndex)}
-        >
-          <TrashIcon className={'size-3'} />
-        </CustomButton>
-      </div>
-    ));
+  if (props.edit) {
+    buttons.push(rowButton('Edit', <PencilIcon className={'size-3'} />, props.edit));
+  }
+  if (props.delete) {
+    buttons.push(rowButton('Delete', <TrashIcon className={'size-3'} />, props.delete, 'red'));
+  }
+  if (props.remove) {
+    buttons.push(rowButton('Remove', <XMarkIcon className={'size-3'} />, props.remove, 'red'));
   }
 
   return buttons;

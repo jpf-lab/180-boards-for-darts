@@ -1,4 +1,11 @@
-import { type ComponentProps, type SubmitEvent, useRef, useState } from 'react';
+import {
+  type ComponentProps,
+  type ReactNode,
+  type SubmitEvent,
+  useId,
+  useRef,
+  useState,
+} from 'react';
 import Fieldset from './Fieldset.tsx';
 import FormField from './FormField.tsx';
 import CustomButton from '../CustomButton.tsx';
@@ -20,12 +27,17 @@ type FormTemplateProps<T extends Record<string, string | undefined>> = {
   successMessage?: string;
   /** Reset the fields after a successful submit, default true */
   resetOnSuccess?: boolean;
+  /** Called whenever the form is reset (reset button or after a successful submit) */
+  onReset?: () => void;
+  /** Rendered below the form, above the buttons. Must not contain a <form>. */
+  children?: ReactNode;
 };
 
 export default function FormTemplate<T extends Record<string, string | undefined>>(
   props: Readonly<FormTemplateProps<T>>
 ) {
   const { legend, fields, initialValues, onSubmit } = props;
+  const formId = useId();
 
   const [values, setValues] = useState<T>(initialValues);
   const [resetCounter, setResetCounter] = useState(0);
@@ -43,6 +55,7 @@ export default function FormTemplate<T extends Record<string, string | undefined
   function resetForm() {
     setValues(initialValues);
     setResetCounter((count) => count + 1);
+    props.onReset?.();
   }
 
   function handleReset() {
@@ -54,7 +67,7 @@ export default function FormTemplate<T extends Record<string, string | undefined
 
   async function handleSubmit(event: SubmitEvent) {
     event.preventDefault();
-    if (busyRef.current) return; // Mehrfachabsendung verhindern
+    if (busyRef.current) return;
 
     busyRef.current = true;
     setLoading(true);
@@ -91,7 +104,7 @@ export default function FormTemplate<T extends Record<string, string | undefined
         </Alert>
       )}
 
-      <form onSubmit={handleSubmit} onReset={handleReset}>
+      <form id={formId} onSubmit={handleSubmit} onReset={handleReset}>
         <Fieldset legend={legend}>
           <div className={'flex flex-wrap gap-4'}>
             {columns.map((column) => (
@@ -112,20 +125,22 @@ export default function FormTemplate<T extends Record<string, string | undefined
             ))}
           </div>
         </Fieldset>
-
-        <p className={'text-sm mb-6'}>
-          <span>*</span> required
-        </p>
-
-        <div className={'flex gap-3 mt-2'}>
-          <CustomButton type={'submit'} disabled={loading}>
-            Save
-          </CustomButton>
-          <CustomButton type={'reset'} buttonstyle={'secondary'} disabled={loading}>
-            Reset
-          </CustomButton>
-        </div>
       </form>
+
+      {props.children}
+
+      <p className={'text-sm mb-6'}>
+        <span>*</span> required
+      </p>
+
+      <div className={'flex gap-3 mt-2'}>
+        <CustomButton type={'submit'} form={formId} disabled={loading}>
+          Save
+        </CustomButton>
+        <CustomButton type={'reset'} form={formId} buttonstyle={'secondary'} disabled={loading}>
+          Reset
+        </CustomButton>
+      </div>
     </>
   );
 }
