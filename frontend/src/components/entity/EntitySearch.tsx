@@ -5,6 +5,7 @@ import LoadingText from '../LoadingText.tsx';
 import SearchForm, { type SearchFormConfig } from '../forms/SearchForm.tsx';
 import TableOverview, {
   generateNewTableOverview,
+  getButtonsDefault,
   getTableOverviewDefault,
 } from '../tables/TableOverview.tsx';
 
@@ -15,15 +16,21 @@ type EntitySearchProps<T> = {
   columnTitles: string[];
   toRow: (item: T) => ReactNode[];
   search: (query: string) => Promise<T[]>;
+  /** Shows an add button per result row when provided */
+  onAdd?: (item: T) => void;
+  /** Results for which this returns true are hidden (already added) */
+  isAdded?: (item: T) => boolean;
 };
 
 export default function EntitySearch<T>(props: Readonly<EntitySearchProps<T>>) {
-  const { title, form, columnTitles, toRow, search } = props;
+  const { title, form, columnTitles, toRow, search, onAdd, isAdded } = props;
 
   const [results, setResults] = useState<T[] | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const requestRef = useRef(0);
+
+  const visible = results ? results.filter((item) => !isAdded?.(item)) : null;
 
   async function handleSearch(query: string) {
     const request = ++requestRef.current;
@@ -48,6 +55,10 @@ export default function EntitySearch<T>(props: Readonly<EntitySearchProps<T>>) {
     setLoading(false);
   }
 
+  const table = visible
+    ? generateNewTableOverview(getTableOverviewDefault(columnTitles), visible.map(toRow))
+    : null;
+
   return (
     <>
       {title && <Headline variant={'h3'}>{title}</Headline>}
@@ -58,9 +69,22 @@ export default function EntitySearch<T>(props: Readonly<EntitySearchProps<T>>) {
         </Alert>
       )}
       {loading && <LoadingText />}
-      {!loading && results && (
+      {!loading && visible && table && (
         <TableOverview
-          {...generateNewTableOverview(getTableOverviewDefault(columnTitles), results.map(toRow))}
+          table={{
+            ...table.table,
+            body: {
+              ...table.table.body,
+              buttons: onAdd
+                ? getButtonsDefault({
+                    add: (rowIndex) => {
+                      const item = visible[rowIndex];
+                      if (item) onAdd(item);
+                    },
+                  })
+                : undefined,
+            },
+          }}
         />
       )}
     </>
