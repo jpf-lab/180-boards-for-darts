@@ -79,7 +79,9 @@ export function layoutBracket(games: TournamentGame[], bestOf = DEFAULT_BEST_OF)
   const finalGames = games
     .filter((game) => game.group === FINAL_GROUP)
     .sort((a, b) => a.position - b.position);
-  const groups = [...new Set(laneGames.map((game) => game.group))].sort();
+  const groups = [...new Set(laneGames.map((game) => game.group))].sort((a, b) =>
+    a.localeCompare(b, undefined, { numeric: true })
+  );
 
   const minRound = laneGames.length ? Math.min(...laneGames.map((game) => game.round)) : 1;
   const maxRound = laneGames.length ? Math.max(...laneGames.map((game) => game.round)) : 0;
