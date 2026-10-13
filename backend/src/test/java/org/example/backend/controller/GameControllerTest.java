@@ -1,7 +1,6 @@
 package org.example.backend.controller;
 
 import org.example.backend.model.Game;
-import org.example.backend.model.GameRound;
 import org.example.backend.model.Pairing;
 import org.example.backend.repository.GameRepo;
 import org.junit.jupiter.api.Test;
