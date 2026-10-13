@@ -1,5 +1,6 @@
 import axiosClient from './axiosClient';
 import type {
+  TournamentGame,
   TournamentLocation,
   TournamentItemResponse,
   TournamentParticipant,
@@ -120,6 +121,14 @@ export async function updatePlayfield(
 
 export async function deletePlayfield(id: string): Promise<void> {
   await axiosClient.delete(`/playfields/${id}`); // 204 No Content
+}
+
+// Games
+export async function getGamesByTournament(tournamentId: string): Promise<TournamentGame[]> {
+  const response = await axiosClient.get<TournamentGame[]>('/games', {
+    params: { tournamentId },
+  });
+  return response.data;
 }
 
 // Search

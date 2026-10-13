@@ -59,8 +59,8 @@ public class GameController {
                 .round(game.round())
                 .position(game.position())
                 .group(game.group())
-                .pairings(game.pairings())
-                .rounds(game.rounds())
+                .pairing(game.pairing())
+                .game_round(game.game_round())
                 .build()
         );
     }
@@ -77,8 +77,8 @@ public class GameController {
                 .round(game.round())
                 .position(game.position())
                 .group(game.group())
-                .pairings(game.pairings())
-                .rounds(game.rounds())
+                .pairing(game.pairing())
+                .game_round(game.game_round())
                 .build()
         );
     }

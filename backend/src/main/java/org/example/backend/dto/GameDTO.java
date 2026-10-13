@@ -10,8 +10,8 @@ public record GameDTO(
         String playfieldId,
         int round,
         int position,
-        int group,
-        List<Pairing> pairings,
-        List<GameRound> rounds
+        String group,
+        List<Pairing> pairing,
+        List<GameRound> game_round
 ) {
 }

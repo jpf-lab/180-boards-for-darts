@@ -7,8 +7,12 @@ import LoadingText from '../components/LoadingText.tsx';
 import Fieldset from '../components/forms/Fieldset.tsx';
 import EntitySearch from '../components/entity/EntitySearch.tsx';
 import SelectedItemsTable from '../components/entity/SelectedItemsTable.tsx';
+import GamesOverview from '../components/games/GamesOverview.tsx';
+// import TournamentBracket from '../components/games/TournamentBracket.tsx';
+import { createNameResolvers } from '../components/games/useGameNames.ts';
 import {
   createTournament,
+  getGamesByTournament,
   searchLocations,
   searchParticipants,
   searchPlayfields,
@@ -36,6 +40,7 @@ import { datetimeLocalToInstant } from '../utils/dateTime.ts';
 import { addUnique, removeAt, toIds } from '../utils/selection.ts';
 import { getTournamentEditData, type TournamentEditData } from '../utils/tournamentHelper.ts';
 import type {
+  TournamentGame,
   TournamentLocation,
   TournamentParticipant,
   TournamentPlayfield,
@@ -54,6 +59,7 @@ export default function TournamentEditor(props: Readonly<{ columns?: number }>) 
   const [location, setLocation] = useState<TournamentLocation | null>(null);
   const [participants, setParticipants] = useState<TournamentParticipant[]>([]);
   const [playfields, setPlayfields] = useState<TournamentPlayfield[]>([]);
+  const [games, setGames] = useState<TournamentGame[]>([]);
 
   const [searchResetCounter, setSearchResetCounter] = useState(0);
 
@@ -81,6 +87,26 @@ export default function TournamentEditor(props: Readonly<{ columns?: number }>) 
       cancelled = true;
     };
   }, [id]);
+
+  useEffect(() => {
+    if (!id) return;
+    let cancelled = false;
+
+    getGamesByTournament(id)
+      .then((result) => {
+        if (!cancelled) setGames(result);
+      })
+      .catch(console.error);
+
+    return () => {
+      cancelled = true;
+    };
+  }, [id]);
+
+  const { participantName, participantShortName, playfieldName } = createNameResolvers(
+    participants,
+    playfields
+  );
 
   async function handleSubmit(values: TournamentFormValues) {
     if (!location?.id) throw new Error('Please select a location.');
@@ -110,73 +136,90 @@ export default function TournamentEditor(props: Readonly<{ columns?: number }>) 
       {loading && <LoadingText />}
       {error && <Alert variant={'error'}>{error}</Alert>}
       {!loading && !error && (
-        <FormTemplate<TournamentFormValues>
-          key={id}
-          legend={'Tournament'}
-          fields={isEdit ? editFields : tournamentFields}
-          initialValues={data?.values ?? tournamentInitialValues}
-          onSubmit={handleSubmit}
-          onReset={handleReset}
-          columns={props.columns}
-          successMessage={isEdit ? 'Tournament updated.' : 'Tournament created.'}
-          resetOnSuccess={!isEdit}
-        >
-          <div className={'flex flex-wrap gap-4 mb-4'}>
-            <Fieldset legend={'Location'}>
-              <SelectedItemsTable<TournamentLocation>
-                columnTitles={locationColumnTitles}
-                items={location ? [location] : []}
-                toRow={locationToRow}
-                onRemove={() => setLocation(null)}
-              />
-              <EntitySearch<TournamentLocation>
-                key={`location-search-${searchResetCounter}`}
-                form={locationSearchForm}
-                columnTitles={locationColumnTitles}
-                toRow={locationToRow}
-                search={searchLocations}
-                onAdd={setLocation}
-                isAdded={(item) => item.id === location?.id}
-              />
-            </Fieldset>
+        <>
+          <FormTemplate<TournamentFormValues>
+            key={id}
+            legend={'Tournament'}
+            fields={isEdit ? editFields : tournamentFields}
+            initialValues={data?.values ?? tournamentInitialValues}
+            onSubmit={handleSubmit}
+            onReset={handleReset}
+            columns={props.columns}
+            successMessage={isEdit ? 'Tournament updated.' : 'Tournament created.'}
+            resetOnSuccess={!isEdit}
+          >
+            <div className={'flex flex-wrap gap-4 mb-4'}>
+              <Fieldset legend={'Location'}>
+                <SelectedItemsTable<TournamentLocation>
+                  columnTitles={locationColumnTitles}
+                  items={location ? [location] : []}
+                  toRow={locationToRow}
+                  onRemove={() => setLocation(null)}
+                />
+                <EntitySearch<TournamentLocation>
+                  key={`location-search-${searchResetCounter}`}
+                  form={locationSearchForm}
+                  columnTitles={locationColumnTitles}
+                  toRow={locationToRow}
+                  search={searchLocations}
+                  onAdd={setLocation}
+                  isAdded={(item) => item.id === location?.id}
+                />
+              </Fieldset>
 
-            <Fieldset legend={'Participants'}>
-              <SelectedItemsTable<TournamentParticipant>
-                key={`participant-search-${searchResetCounter}`}
-                columnTitles={participantColumnTitles}
-                items={participants}
-                toRow={participantToRow}
-                onRemove={(index) => setParticipants((prev) => removeAt(prev, index))}
-              />
-              <EntitySearch<TournamentParticipant>
-                key={`playfield-search-${searchResetCounter}`}
-                form={participantSearchForm}
-                columnTitles={participantColumnTitles}
-                toRow={participantToRow}
-                search={searchParticipants}
-                onAdd={(item) => setParticipants((prev) => addUnique(prev, item))}
-                isAdded={(item) => participants.some((entry) => entry.id === item.id)}
-              />
-            </Fieldset>
+              <Fieldset legend={'Participants'}>
+                <SelectedItemsTable<TournamentParticipant>
+                  columnTitles={participantColumnTitles}
+                  items={participants}
+                  toRow={participantToRow}
+                  onRemove={(index) => setParticipants((prev) => removeAt(prev, index))}
+                />
+                <EntitySearch<TournamentParticipant>
+                  key={`participant-search-${searchResetCounter}`}
+                  form={participantSearchForm}
+                  columnTitles={participantColumnTitles}
+                  toRow={participantToRow}
+                  search={searchParticipants}
+                  onAdd={(item) => setParticipants((prev) => addUnique(prev, item))}
+                  isAdded={(item) => participants.some((entry) => entry.id === item.id)}
+                />
+              </Fieldset>
 
-            <Fieldset legend={'Playfields'}>
-              <SelectedItemsTable<TournamentPlayfield>
-                columnTitles={playfieldColumnTitles}
-                items={playfields}
-                toRow={playfieldToRow}
-                onRemove={(index) => setPlayfields((prev) => removeAt(prev, index))}
+              <Fieldset legend={'Playfields'}>
+                <SelectedItemsTable<TournamentPlayfield>
+                  columnTitles={playfieldColumnTitles}
+                  items={playfields}
+                  toRow={playfieldToRow}
+                  onRemove={(index) => setPlayfields((prev) => removeAt(prev, index))}
+                />
+                <EntitySearch<TournamentPlayfield>
+                  key={`playfield-search-${searchResetCounter}`}
+                  form={playfieldSearchForm}
+                  columnTitles={playfieldColumnTitles}
+                  toRow={playfieldToRow}
+                  search={searchPlayfields}
+                  onAdd={(item) => setPlayfields((prev) => addUnique(prev, item))}
+                  isAdded={(item) => playfields.some((entry) => entry.id === item.id)}
+                />
+              </Fieldset>
+            </div>
+          </FormTemplate>
+
+          {isEdit && (
+            <>
+              <Headline variant={'h3'}>Games</Headline>
+              <GamesOverview
+                games={games}
+                variant={'list'}
+                participantName={participantName}
+                participantShortName={participantShortName}
+                playfieldName={playfieldName}
               />
-              <EntitySearch<TournamentPlayfield>
-                form={playfieldSearchForm}
-                columnTitles={playfieldColumnTitles}
-                toRow={playfieldToRow}
-                search={searchPlayfields}
-                onAdd={(item) => setPlayfields((prev) => addUnique(prev, item))}
-                isAdded={(item) => playfields.some((entry) => entry.id === item.id)}
-              />
-            </Fieldset>
-          </div>
-        </FormTemplate>
+              {/*<Headline variant={'h3'}>Bracket</Headline>*/}
+              {/*<TournamentBracket games={games} participantName={participantName} />*/}
+            </>
+          )}
+        </>
       )}
     </>
   );

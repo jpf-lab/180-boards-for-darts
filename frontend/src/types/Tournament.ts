@@ -48,19 +48,16 @@ export type TournamentGame = {
   playfieldId: string;
   round: number;
   position: number;
-  group: number;
-  pairings: TournamentPairing[];
-  rounds: TournamentGameRound[];
+  group: string;
+  pairing: TournamentPairing[];
+  game_round: TournamentGameRound[];
 };
 
 export type TournamentPairing = {
   participantId: string;
-  team?: number;
-  teamOrder?: number;
 };
 
 export type TournamentGameRound = {
-  roundNumber: number;
   startingPlayer: string;
   winner?: string;
 };
