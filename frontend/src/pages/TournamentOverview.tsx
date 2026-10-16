@@ -1,3 +1,4 @@
+import { TrophyIcon } from '@heroicons/react/24/solid';
 import EntityOverview from '../components/entity/EntityOverview.tsx';
 import LocationLink from '../components/LocationLink.tsx';
 import { deleteTournamentById, getTournamentOverview } from '../utils/tournamentHelper.ts';
@@ -13,6 +14,14 @@ const toRow = (tournament: TournamentOverviewItem) => [
 
 const getLabel = (tournament: TournamentOverviewItem) => tournament.name ?? '';
 
+const rowLinks = [
+  {
+    title: 'Games',
+    icon: <TrophyIcon className={'size-3'} />,
+    to: (tournament: TournamentOverviewItem) => `/tournaments/${tournament.id}/games`,
+  },
+];
+
 export default function TournamentOverview() {
   return (
     <EntityOverview<TournamentOverviewItem>
@@ -24,6 +33,7 @@ export default function TournamentOverview() {
       getLabel={getLabel}
       loadAll={getTournamentOverview}
       onDelete={deleteTournamentById}
+      rowLinks={rowLinks}
     />
   );
 }

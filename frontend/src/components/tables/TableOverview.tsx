@@ -25,6 +25,8 @@ export type TableOverviewProps = {
 type RowHandler = (rowIndex: number) => void | Promise<void>;
 
 type OverviewButtonProps = {
+  /** Custom buttons, rendered before all default buttons */
+  before?: TableOverviewButton[];
   add?: RowHandler;
   edit?: RowHandler;
   delete?: RowHandler;
@@ -52,7 +54,7 @@ function rowButton(
 }
 
 export function getButtonsDefault(props: OverviewButtonProps): TableOverviewButton[] {
-  const buttons: TableOverviewButton[] = [];
+  const buttons: TableOverviewButton[] = [...(props.before ?? [])];
 
   if (props.add) {
     buttons.push(rowButton('Add', <PlusIcon className={'size-3'} />, props.add, 'green'));

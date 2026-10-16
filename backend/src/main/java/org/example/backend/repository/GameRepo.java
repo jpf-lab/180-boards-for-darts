@@ -14,6 +14,7 @@ public interface GameRepo extends MongoRepository<Game, String> {
 
     List<Game> findByPlayfieldId(String playfieldId);
 
-    @Query("{ 'pairings.participantId': ?0 }") //durchsuche das Array pairings, und für jedes Element darin, schau ins Feld participantId
+    // Search the pairing array and check the participantId field of each element
+    @Query("{ 'pairing.participantId': ?0 }")
     List<Game> findByParticipantId(String participantId);
 }

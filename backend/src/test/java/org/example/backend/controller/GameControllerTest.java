@@ -38,6 +38,7 @@ class GameControllerTest {
     private static final String TOURNAMENT_ID = "507f1f77bcf86cd799439012";
     private static final String PLAYFIELD_ID = "507f1f77bcf86cd799439013";
     private static final String PARTICIPANT_ID = "507f1f77bcf86cd799439014";
+    private static final String OPPONENT_ID = "507f1f77bcf86cd799439015";
 
     @Test
     void getAll_returnsAllGames() throws Exception {
@@ -45,7 +46,7 @@ class GameControllerTest {
                 .id(GAME_ID)
                 .round(1)
                 .position(0)
-                .group(0)
+                .group("A")
                 .build();
         when(gameRepo.findAll()).thenReturn(List.of(game));
 
@@ -57,9 +58,9 @@ class GameControllerTest {
                       "playfieldId": null,
                       "round": 1,
                       "position": 0,
-                      "group": 0,
-                      "pairings": null,
-                      "rounds": null
+                      "group": "A",
+                      "pairing": null,
+                      "game_round": null
                     }
                 ]
                 """;
@@ -75,6 +76,7 @@ class GameControllerTest {
                 .id(GAME_ID)
                 .round(1)
                 .position(0)
+                .group("A")
                 .build();
         when(gameRepo.findById(GAME_ID)).thenReturn(Optional.of(game));
 
@@ -83,7 +85,7 @@ class GameControllerTest {
                   "id": "507f1f77bcf86cd799439011",
                   "round": 1,
                   "position": 0,
-                  "group": 0
+                  "group": "A"
                 }
                 """;
 
@@ -183,14 +185,10 @@ class GameControllerTest {
     void getByParticipantId_returnsMatchingGames() throws Exception {
         Pairing pairing = Pairing.builder()
                 .participantId(PARTICIPANT_ID)
-                .team(0)
-                .teamOrder(0)
                 .build();
         Game game = Game.builder()
                 .id(GAME_ID)
-                .pairings(
-                        List.of(pairing)
-                )
+                .pairing(List.of(pairing))
                 .build();
         when(gameRepo.findByParticipantId(PARTICIPANT_ID)).thenReturn(List.of(game));
 
@@ -198,11 +196,9 @@ class GameControllerTest {
                 [
                   {
                     "id": "507f1f77bcf86cd799439011",
-                    "pairings": [
+                    "pairing": [
                       {
-                        "participantId": "507f1f77bcf86cd799439014",
-                        "team": 0,
-                        "teamOrder": 0
+                        "participantId": "507f1f77bcf86cd799439014"
                       }
                     ]
                   }
@@ -220,7 +216,7 @@ class GameControllerTest {
                 .id(GAME_ID)
                 .round(1)
                 .position(0)
-                .group(0)
+                .group("A")
                 .build();
         when(gameRepo.save(any(Game.class))).thenReturn(saved);
 
@@ -228,7 +224,7 @@ class GameControllerTest {
                 {
                     "round": 1,
                     "position": 0,
-                    "group": 0
+                    "group": "A"
                 }
                 """;
         String expectedJson = """
@@ -236,7 +232,7 @@ class GameControllerTest {
                   "id": "507f1f77bcf86cd799439011",
                   "round": 1,
                   "position": 0,
-                  "group": 0
+                  "group": "A"
                 }
                 """;
 
@@ -248,6 +244,47 @@ class GameControllerTest {
     }
 
     @Test
+    void create_mapsPairingAndGameRoundFromRequest() throws Exception {
+        Game saved = Game.builder().id(GAME_ID).group("A").build();
+        when(gameRepo.save(any(Game.class))).thenReturn(saved);
+
+        String requestBody = """
+                {
+                    "tournamentId": "507f1f77bcf86cd799439012",
+                    "playfieldId": "507f1f77bcf86cd799439013",
+                    "round": 1,
+                    "position": 1,
+                    "group": "A",
+                    "pairing": [
+                        { "participantId": "507f1f77bcf86cd799439014" },
+                        { "participantId": "507f1f77bcf86cd799439015" }
+                    ],
+                    "game_round": [
+                        {
+                            "startingPlayer": "507f1f77bcf86cd799439014",
+                            "winner": "507f1f77bcf86cd799439014"
+                        }
+                    ]
+                }
+                """;
+
+        mockMvc.perform(post("/api/games").with(adminLogin())
+                        .contentType("application/json")
+                        .content(requestBody))
+                .andExpect(status().isCreated());
+
+        verify(gameRepo).save(argThat(g ->
+                g.id() == null
+                        && "A".equals(g.group())
+                        && g.pairing().size() == 2
+                        && PARTICIPANT_ID.equals(g.pairing().get(0).participantId())
+                        && OPPONENT_ID.equals(g.pairing().get(1).participantId())
+                        && g.game_round().size() == 1
+                        && PARTICIPANT_ID.equals(g.game_round().getFirst().startingPlayer())
+                        && PARTICIPANT_ID.equals(g.game_round().getFirst().winner())));
+    }
+
+    @Test
     void update_returnsUpdatedGame_whenExists() throws Exception {
         Game updated = Game.builder()
                 .id(GAME_ID)
@@ -255,9 +292,9 @@ class GameControllerTest {
                 .playfieldId(PLAYFIELD_ID)
                 .round(2)
                 .position(3)
-                .group(1)
-                .pairings(List.of())
-                .rounds(List.of())
+                .group("B")
+                .pairing(List.of())
+                .game_round(List.of())
                 .build();
 
         when(gameRepo.existsById(GAME_ID)).thenReturn(true);
@@ -269,9 +306,9 @@ class GameControllerTest {
                     "playfieldId": "507f1f77bcf86cd799439013",
                     "round": 2,
                     "position": 3,
-                    "group": 1,
-                    "pairings": [],
-                    "rounds": []
+                    "group": "B",
+                    "pairing": [],
+                    "game_round": []
                 }
                 """;
         String expectedJson = """
@@ -281,7 +318,9 @@ class GameControllerTest {
                     "playfieldId": "507f1f77bcf86cd799439013",
                     "round": 2,
                     "position": 3,
-                    "group": 1
+                    "group": "B",
+                    "pairing": [],
+                    "game_round": []
                 }
                 """;
 
@@ -291,7 +330,8 @@ class GameControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().json(expectedJson));
 
-        verify(gameRepo).save(argThat(g -> g.id().equals(GAME_ID) && g.round() == 2));
+        verify(gameRepo).save(argThat(g ->
+                g.id().equals(GAME_ID) && g.round() == 2 && "B".equals(g.group())));
     }
 
     @Test
@@ -303,7 +343,7 @@ class GameControllerTest {
                 {
                     "round": 1,
                     "position": 0,
-                    "group": 0
+                    "group": "A"
                 }
                 """;
 

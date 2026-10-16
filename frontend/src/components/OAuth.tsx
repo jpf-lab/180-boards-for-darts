@@ -23,7 +23,7 @@ export default function OAuth(props: Readonly<OAuthProps>) {
   function loadUser() {
     if (!props.user?.name) {
       axios
-        .get<AppUserType>('api/auth/me')
+        .get<AppUserType>('/api/auth/me')
         .then((r) => {
           props.setUser({
             name: r.data.name ? r.data.name : undefined,

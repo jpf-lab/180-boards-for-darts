@@ -9,19 +9,29 @@ import TableOverview, {
   generateNewTableOverview,
   getButtonsDefault,
   getTableOverviewDefault,
+  type TableOverviewButton,
   type TableOverviewProps,
 } from '../tables/TableOverview.tsx';
+
+export type EntityRowLink<T> = {
+  title: string;
+  icon: ReactNode;
+  /** Target path for the row, e.g. (item) => `/tournaments/${item.id}/games` */
+  to: (item: T) => string;
+};
 
 type EntityOverviewProps<T extends { id?: string }> = {
   title: string;
   entityName: string;
-  /** z. B. '/locations' */
+  /** e.g. '/locations' */
   basePath: string;
   columnTitles: string[];
   toRow: (item: T) => ReactNode[];
   getLabel: (item: T) => string;
   loadAll: () => Promise<T[] | undefined>;
   onDelete: (id?: string) => Promise<void>;
+  /** Additional link buttons per row, rendered before the edit button */
+  rowLinks?: EntityRowLink<T>[];
 };
 
 export default function EntityOverview<T extends { id?: string }>(
@@ -84,6 +94,18 @@ export default function EntityOverview<T extends { id?: string }>(
     if (id) navigate(`${basePath}/${id}/edit`);
   }
 
+  const linkButtons: TableOverviewButton[] = (props.rowLinks ?? []).map((link) => (rowIndex) => {
+    const item = items[rowIndex];
+    if (!item?.id) return null;
+    return (
+      <div className={'flex items-center justify-center'}>
+        <CustomButton variant={'link'} to={link.to(item)} title={link.title}>
+          {link.icon}
+        </CustomButton>
+      </div>
+    );
+  });
+
   return (
     <>
       <Headline variant={'h1'}>{title}</Headline>
@@ -114,7 +136,11 @@ export default function EntityOverview<T extends { id?: string }>(
               ...tableOverview.table,
               body: {
                 ...tableOverview.table.body,
-                buttons: getButtonsDefault({ edit: handleEdit, delete: handleDelete }),
+                buttons: getButtonsDefault({
+                  before: linkButtons,
+                  edit: handleEdit,
+                  delete: handleDelete,
+                }),
               },
             }}
           />

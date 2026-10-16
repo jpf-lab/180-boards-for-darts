@@ -142,14 +142,13 @@ export default function TournamentEditor(props: Readonly<{ columns?: number }>) 
 
             <Fieldset legend={'Participants'}>
               <SelectedItemsTable<TournamentParticipant>
-                key={`participant-search-${searchResetCounter}`}
                 columnTitles={participantColumnTitles}
                 items={participants}
                 toRow={participantToRow}
                 onRemove={(index) => setParticipants((prev) => removeAt(prev, index))}
               />
               <EntitySearch<TournamentParticipant>
-                key={`playfield-search-${searchResetCounter}`}
+                key={`participant-search-${searchResetCounter}`}
                 form={participantSearchForm}
                 columnTitles={participantColumnTitles}
                 toRow={participantToRow}
@@ -167,6 +166,7 @@ export default function TournamentEditor(props: Readonly<{ columns?: number }>) 
                 onRemove={(index) => setPlayfields((prev) => removeAt(prev, index))}
               />
               <EntitySearch<TournamentPlayfield>
+                key={`playfield-search-${searchResetCounter}`}
                 form={playfieldSearchForm}
                 columnTitles={playfieldColumnTitles}
                 toRow={playfieldToRow}

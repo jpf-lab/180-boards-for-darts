@@ -7,7 +7,7 @@ public record LocationDTO(
         String city,
         String postalcode,
         String owner,
-        Integer contactPhone,
+        String contactPhone,
         String contactMail
 ) {
 }
